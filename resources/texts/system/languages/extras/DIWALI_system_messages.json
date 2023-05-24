@@ -1,0 +1,23 @@
+{
+    "start": "YoBot is lighting the diya...",
+    "stop": "YoBot is enjoying the sweets...",
+    "shutdown": "YoBot is gazing at the fireworks...",
+    "online": "{display_name}.YoBot is spreading the Festival of Lights.",
+    "offline": "{display_name}.YoBot is whispering Diwali blessings.",
+    "connect": "{display_name}.YoBot is joining the Diwali celebrations.",
+    "success": "{success} was as bright as a Diwali lantern.",
+    "error": "Ravana's Trickery: {error}",
+    "loaded": "{loaded} illuminated like a Diwali night.",
+    "terminal_callback": "A wish was made to Lakshmi: < {command} >",
+    "link_info": "Spreading joy with: {guild} | ID: {guild_id}",
+    "setup_wizard" : {
+        "title": "-=Diwali Preparation Guide=-",
+        "detected": "Unpacking a new box of sweets.",
+        "request_inputs": "Please jot down on the Diwali card:"
+    },
+    "setup_info": {
+        "title": "YoBot's Diwali Prep:",
+        "display_name": "Festival Name: {display_name}",
+        "now_playing": "Diwali Song: {now_playing}"
+    }
+}

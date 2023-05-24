@@ -1,0 +1,23 @@
+{
+    "start": "YoBot esta iniciando...",
+    "stop": "YoBot esta deteniendo...",
+    "shutdown": "YoBot se esta apagando...",
+    "online": "{display_name}.YoBot esta en línea.",
+    "offline": "{display_name}.YoBot esta desconectado.",
+    "connect": "{display_name}.YoBot esta conectado.",
+    "success": "{success} fue exitoso.",
+    "error": "Error: {error}",
+    "loaded": "{loaded} fue cargado.",
+    "terminal_callback": "El usuario ingreso el comando: < {command} >",
+    "link_info": "Vinculado con: {guild} | ID: {guild_id}",
+    "setup_wizard" : {
+        "title": "-=Asistente de configuracion=-",
+        "detected": "Detectado la primera configuracion.",
+        "request_inputs": "Por favor, introduzca los siguientes campos:"
+    },
+    "setup_info": {
+        "title": "Configuracion de YoBot:",
+        "display_name": "Nombre para mostrar: {display_name}",
+        "now_playing": "Ahora reproduciendo: {now_playing}"
+    }
+}

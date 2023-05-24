@@ -1,0 +1,23 @@
+{
+    "start": "YoBot is starting the quest...",
+    "stop": "YoBot is setting up camp...",
+    "shutdown": "YoBot is returning to the castle...",
+    "online": "{display_name}.YoBot has joined the adventure party.",
+    "offline": "{display_name}.YoBot is studying the magic tome.",
+    "connect": "{display_name}.YoBot has ventured into the dungeon.",
+    "success": "{success} has defeated the dragon.",
+    "error": "A wizard's hex: {error}",
+    "loaded": "{loaded} has been discovered in the treasure chest.",
+    "terminal_callback": "A heroic deed was performed: < {command} >",
+    "link_info": "In alliance with: {guild} | ID: {guild_id}",
+    "setup_wizard" : {
+        "title": "-=Quest Giver=-",
+        "detected": "Opening a new chapter of the adventure.",
+        "request_inputs": "Please inscribe in the quest log:"
+    },
+    "setup_info": {
+        "title": "YoBot's Adventure Prep:",
+        "display_name": "Hero's Name: {display_name}",
+        "now_playing": "Bard's Ballad: {now_playing}"
+    }
+}

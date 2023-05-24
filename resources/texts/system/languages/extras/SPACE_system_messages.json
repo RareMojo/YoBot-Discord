@@ -1,0 +1,23 @@
+{
+    "start": "YoBot is preparing for lift-off...",
+    "stop": "YoBot is entering orbit...",
+    "shutdown": "YoBot is returning to mission control...",
+    "online": "{display_name}.YoBot has left the stratosphere.",
+    "offline": "{display_name}.YoBot is enjoying zero gravity.",
+    "connect": "{display_name}.YoBot is docking with the space station.",
+    "success": "{success} has reached the stars.",
+    "error": "Houston, we have a problem: {error}",
+    "loaded": "{loaded} is cruising through the cosmos.",
+    "terminal_callback": "Astronaut command received: < {command} >",
+    "link_info": "In communication with: {guild} | ID: {guild_id}",
+    "setup_wizard" : {
+        "title": "-=Mission Control=-",
+        "detected": "Starting a new space mission.",
+        "request_inputs": "Please provide mission parameters:"
+    },
+    "setup_info": {
+        "title": "YoBot Space Mission Setup:",
+        "display_name": "Spaceship Name: {display_name}",
+        "now_playing": "Space Soundtrack: {now_playing}"
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "start": "YoBot is rolling the film...",
+    "stop": "YoBot is cutting the scene...",
+    "shutdown": "YoBot is wrapping up the shoot...",
+    "online": "{display_name}.YoBot is ready for its close-up.",
+    "offline": "{display_name}.YoBot is in the editing room.",
+    "connect": "{display_name}.YoBot is joining the film crew.",
+    "success": "{success} got a standing ovation.",
+    "error": "Take Two, we had a blooper: {error}",
+    "loaded": "{loaded} has hit the silver screen.",
+    "terminal_callback": "Director's command received: < {command} >",
+    "link_info": "On set with: {guild} | ID: {guild_id}",
+    "setup_wizard" : {
+        "title": "-=Director's Chair=-",
+        "detected": "Setting up a new film scene.",
+        "request_inputs": "Please provide scene details:"
+    },
+    "setup_info": {
+        "title": "YoBot's Movie Production Setup:",
+        "display_name": "Star's Name: {display_name}",
+        "now_playing": "Film Score: {now_playing}"
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "start": "YoBot is painting the eggs...",
+    "stop": "YoBot is hiding the eggs...",
+    "shutdown": "YoBot is hopping back to the burrow...",
+    "online": "{display_name}.YoBot is on the bunny trail.",
+    "offline": "{display_name}.YoBot is taking a bunny nap.",
+    "connect": "{display_name}.YoBot is joining the Easter parade.",
+    "success": "{success} was as sweet as an Easter candy.",
+    "error": "Rotten Egg: {error}",
+    "loaded": "{loaded} popped up like a spring flower.",
+    "terminal_callback": "A wish was made upon a daisy: < {command} >",
+    "link_info": "Bouncing along with: {guild} | ID: {guild_id}",
+    "setup_wizard" : {
+        "title": "-=Egg Hunt Guide=-",
+        "detected": "Unpacking a new Easter basket.",
+        "request_inputs": "Please jot down on the Easter card:"
+    },
+    "setup_info": {
+        "title": "YoBot's Easter Prep:",
+        "display_name": "Bunny Name: {display_name}",
+        "now_playing": "Spring Song: {now_playing}"
+    }
+}
