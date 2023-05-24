@@ -3,7 +3,7 @@
 
 The YoBot project is a structured and customizable bot framework implemented in Python. 
 
-It allows for multilingual support and includes a wide range of functionalities such as logging, configuration management, language selection, and terminal command handling. 
+It comes prepared to with a localized terminal, extension loading, examples, and other essentials.
 
 The structure of the project and functionalities of each module are described below.
 <br>
@@ -17,7 +17,7 @@ This can serve as a template to quickly deploy a barebones Discord.py bot withou
 
 It's also intended to be a great learning tool for anyone that is looking for an easy programming project.
 
-Designing a simple Cog doesn't take a degree! You can take it further and fork the project completely and work beyond Cog plugins. The limit is your creativity.
+Designing an Extension isn't rocket science. The limit is your creativity!
 <br>
 <br>
 
@@ -33,6 +33,8 @@ YoBot has multilingual support, which is achieved by using JSON files for each s
 
 Each JSON file contains system messages translated into the respective language.
 
+The Discord and other API handlers can often do their own localization, but this handles the local terminal system.
+
 <b>Note:</b> *machine translated, may not be accurate*
 <br>
 <br>
@@ -40,7 +42,9 @@ Each JSON file contains system messages translated into the respective language.
 ### Logging
 YoBot uses Python's built-in logging module that records and saves events that occur while YoBot is running.
 
-The log messages can be customized and translated based on the current language setting.
+It's designed with an optional key system to easily edit system level messages and add localization.
+
+The log messages can be formatted to your desire here.
 <br>
 <br>
 
@@ -50,13 +54,19 @@ YoBot can handle commands entered directly from the terminal.
 The included commands include exit, help, language, and ping.
 
 You can easily create new commands for the terminal.
+
+This allows YoBot to still be utilized as a regular Python-bot at its core.
+
+<b>Note:</b> *please follow security guidelines*
 <br>
 <br>
 
-### Cogs
-Cogs are intended for additional modular features to extend the functionality of YoBot.
+### Extensions
+Extensions are intended for additional modular features to extend the functionality of YoBot.
 
-Each Cog is expected to be a separate Python script implementing a particular feature or set of features.
+These can be `Cogs`, `Events`, or `Plugins`.
+
+Each Extension is expected to be a separate Python script implementing a particular feature or set of features.
 
 This can be something as simple as custom Discord commands to tracking every Elon Musk tweet in your private server.
 <br>
@@ -182,17 +192,26 @@ It is not advised to allow the YoBot or any Cog/Extension to use these commands.
 
 <br>
 
-# #Cogs
+# #Extensions
+Extensions are Events, Cogs, and Plugins. These are drop in and out modules for YoBot to process.
 
-## discordcommandscog.py
-This is where all of the Discord commands are setup. Quickly change or add commands for the Discord bot.
+With these, YoBot can be very customizable and solve multiple problems.
+
+Below is a brief description of some of the ones that come included.
 
 <br>
 
-# Events
+## discordcommandscog.py
+
+This is where all of the Discord commands are setup.
+Quickly change or add commands for the Discord bot.
+
+<br>
 
 ## discordevents.py
-Events are listeners. Quickly change or add events for the Discord bot. You can tap into a listening event and add functionality to it.
+
+Events are listeners. Quickly change or add events for the Discord bot.
+You can tap into a listening event and add functionality to it.
 
 #### Key functions:
 - `on_connect():` This fires when YoBot is connected to Discord.
@@ -200,7 +219,7 @@ Events are listeners. Quickly change or add events for the Discord bot. You can 
 - `on_message():` This fires anything in this block when a message is received.
 
 <br>
-
+    
 ## #Thank You
 Thank you for your interest in the YoBot project. This endeavor is a product of commitment to providing a customizable, user-friendly bot.
 
@@ -215,4 +234,24 @@ Happy Coding!
 <br>
 
 ## License
-This project is licensed under the MIT License.
+MIT License
+
+Copyright (c) 2023 Nick Rejcek
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
