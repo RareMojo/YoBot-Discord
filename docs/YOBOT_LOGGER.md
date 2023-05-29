@@ -8,11 +8,15 @@ The package inherits from Python's built-in logging module and offers features s
 - File rotation (`RotatingFileHandler`)
 - Terminal command handling
 
+<br>
+
 ## Installation
 
 As `YoBotLogger` is a custom Python module.
 
 It's built in with the `YoBotBuilder` class, which is used to build an instance of the `YoBot` class.
+
+<br>
 
 ## Usage
 ### YoBotLogger
@@ -35,6 +39,8 @@ logger = YoBotLogger(
 - `maxBytes`: The maximum size of a log file. After reaching this limit, the log file will be rotated (default: `1000000`).
 - `backupCount`: The number of backup log files to keep (default: `1`).
 
+<br>
+
 ## Terminal Command Loop
 
 You can initiate the main `YoBotLogger` terminal command loop by calling the `terminal_command_loop` function.
@@ -45,6 +51,8 @@ async def main():
 
 asyncio.run(main())
 ```
+
+<br>
 
 ## Terminal Commands
 
