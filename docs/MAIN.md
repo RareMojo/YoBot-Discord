@@ -19,7 +19,7 @@ A `YoBotBuilder` object is created with the aforementioned paths, which is then 
 ## Main Execution
 The script only executes `launch_bot`() if the script is being run directly (i.e., it's not being imported as a module in another script). This prevents `YoBot` from being unintentionally launched when the module is imported.
 
-To execute this script and launch `YoBot`, navigate to the directory containing this script in a terminal or command prompt and run the command python `script_name.py` (replace `script_name.py` with the actual script's filename).
+To execute this script and launch `YoBot`, navigate to the directory containing this script in a terminal or command prompt and run the command `python .\src\main.py`
 
 <br>
 
