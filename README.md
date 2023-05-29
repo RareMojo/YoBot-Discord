@@ -42,7 +42,7 @@ Some included commands are `exit`, `help`, `setbotname`, and more.
 
 You can easily create new commands for the terminal.
 
-Start creating them in `yobot_logger.py` within `class YobotTerminalCommands()` by calling functions from `yobot_lib.py`.
+Start creating them in `yobot_logger.py` within class `YobotTerminalCommands()` by calling functions from `yobot_lib.py`.
 
 This allows `YoBot` to still be utilized as a regular Python-bot at its core.
 
