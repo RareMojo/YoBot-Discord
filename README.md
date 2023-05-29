@@ -1,4 +1,4 @@
-# #YoBot
+# YoBot
 <br>
 
 The YoBot project is a basic, structured, and customizable bot framework implemented in Python. 
@@ -9,7 +9,7 @@ The structure of the project and functionalities of each module are described be
 <br>
 <br>
 
-## #Features
+## Features
 ### Accessibility
 Yobot is meant to be easy to setup and use without much know how. Today it may be a few foreign commands, tomorrow it will be seamless for anyone.
 
@@ -61,7 +61,7 @@ This can be something as simple as custom Discord commands to tracking every Elo
 <br>
 <br>
 
-## #Installation
+## Installation
 ### Prerequisites
 - Discord, Discord Account, and Discord App
 - Python 3.10.9+
@@ -90,7 +90,7 @@ This can be something as simple as custom Discord commands to tracking every Elo
     - Add or edit anything you'd like.
 <br>
 
-## #Configuration Management
+## Configuration Management
 Configuration settings for YoBot are stored in the `/configs` directory as JSON files.
 
 The `config.json` file contains the main configuration settings for YoBot.
@@ -120,7 +120,7 @@ Change your avatar in `resources/images/avatar.png`. Swap for any 128x128 png/jp
         - `utils` Contains utility functions for YoBot.
 <br>
     
-## #Thank You
+## Thank You
 Thank you for your interest in the YoBot project. This endeavor is a product of commitment to providing a customizable, user-friendly bot.
 
 I hope this detailed overview provided useful insights into the inner workings of YoBot. 
