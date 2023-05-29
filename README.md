@@ -136,7 +136,7 @@ Thank you for your interest in the `YoBot` project. This endeavor is a product o
 
 I hope this detailed overview provided useful insights into the inner workings of `YoBot`. 
 
-If you have any questions, suggestions, or require further information, don't hesitate to reach out. Your involvement makes YoBot better.
+If you have any questions, suggestions, or require further information, don't hesitate to reach out. Your involvement makes `YoBot` better.
 
 Once again, thank you for your time. 
 
