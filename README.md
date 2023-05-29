@@ -1,7 +1,7 @@
 # #YoBot
 <br>
 
-The YoBot project is a structured and customizable bot framework implemented in Python. 
+The YoBot project is a basic, structured, and customizable bot framework implemented in Python. 
 
 It comes prepared to with a localized terminal, extension loading, examples, and other essentials.
 
@@ -17,7 +17,7 @@ This can serve as a template to quickly deploy a barebones Discord.py bot withou
 
 It's also intended to be a great learning tool for anyone that is looking for an easy programming project.
 
-Designing an Extension isn't rocket science. The limit is your creativity!
+Designing a `Cog` isn't rocket science. The limit is your creativity!
 <br>
 <br>
 
@@ -28,32 +28,21 @@ There are no plans to make support for any other platforms.
 <br>
 <br>
 
-### Languages Support
-YoBot has multilingual support, which is achieved by using JSON files for each supported language.
-
-Each JSON file contains system messages translated into the respective language.
-
-The Discord and other API handlers can often do their own localization, but this handles the local terminal system.
-
-<b>Note:</b> *machine translated, may not be accurate*
-<br>
-<br>
-
 ### Logging
-YoBot uses Python's built-in logging module that records and saves events that occur while YoBot is running.
+YoBot uses a custom logging module to handle all logging.
 
-It's designed with an optional key system to easily edit system level messages and add localization.
-
-The log messages can be formatted to your desire here.
+This allows for changing the way logs are saved, formatted, and handled easily.
 <br>
 <br>
 
 ### Terminal Command Handling
 YoBot can handle commands entered directly from the terminal.
 
-The included commands include exit, help, language, and ping.
+Some included commands are `exit`, `help`, `setbotname`, and more.
 
 You can easily create new commands for the terminal.
+
+Start creating them in `yobot_logger.py` within `class YobotTerminalCommands()` by calling functions from `yobot_lib.py`.
 
 This allows YoBot to still be utilized as a regular Python-bot at its core.
 
@@ -64,7 +53,7 @@ This allows YoBot to still be utilized as a regular Python-bot at its core.
 ### Extensions
 Extensions are intended for additional modular features to extend the functionality of YoBot.
 
-These can be `Cogs`, `Events`, or `Plugins`.
+These are called `Cogs` and can be a number of things.
 
 Each Extension is expected to be a separate Python script implementing a particular feature or set of features.
 
@@ -80,15 +69,15 @@ This can be something as simple as custom Discord commands to tracking every Elo
 - IDE of choice if you want to extend the app (VSCode is my goto)
 
 1. ### Clone the repository:
-    - `git clone https://github.com/RareMojo/yobot`
+    - `git clone https://github.com/RareMojo/YoBot-Discord`
 
 2. ### Install the required dependencies:
     - `pip install -r requirements.txt`
 
 3. ### Invite YoBot:
-    - Visit here and create an application. https://discord.com/developers/applications
+    - Visit [Discord Developer Portal](https://discord.com/developers/applications) and create an application.
     - Obtain a secret token for the config file.
-    - Follow this guide for more info. https://discordjs.guide/preparations/adding-your-bot-to-servers.html#bot-invite-links
+    - Follow [this guide](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#bot-invite-links) for more info.
 
 4. ### Run YoBot:
     - When launching the first time it will automatically ask you for inputs to configure YoBot.
@@ -97,127 +86,38 @@ This can be something as simple as custom Discord commands to tracking every Elo
     - If you encounter any issues, please refer to the logging information outputted to the console or written to the log file.
 
 5. ### Edit and Add
-    - Add modules to the `data/Cogs` directory to extend functionality.
+    - Add modules to the `src/cogs` directory to extend functionality.
     - Add or edit anything you'd like.
 <br>
 
 ## #Configuration Management
-Configuration settings for YoBot are stored in INI files in the configs directory.
+Configuration settings for YoBot are stored in the `/configs` directory as JSON files.
 
-The `core_config.ini` file stores settings related to YoBot's core functionalities, while the `bot_config.ini` file stores settings specifically related to the Discord bot functionalities.
+The `config.json` file contains the main configuration settings for YoBot.
 
-### Core Configuration
-- `owner_name` Is the name of the person hosting this.
-- `debug` Is the developer mode toggle.
-- `language` The core language all `msg_key` log messages will follow.
+Change your avatar in `resources/images/avatar.png`. Swap for any 128x128 png/jpg.
 
-### Bot Configuration
+### Configuration file
 - `discord_token` Is the app secret key.
-- `display_name` Sets YoBots name.
-- `now_playing` Sets the now playing message.
-- `intents` Sets YoBot permission level.
-- `data/images/avatar.png` Swap for any 128x128 png/jpg to change avatars.
+- `owner_name` Sets YoBots owner name.
+- `owner_id` Sets YoBots owner ID.
+- `prefix` Sets YoBots command prefix.
+- `bot_name` Sets YoBots name.
+- `presence` Sets the now playing message.
+- `debug` Sets the debug mode for YoBot.
+- `update_bot` Flag used for first time setup or updating YoBot with new settings.
 
 ### Project Structure
 - `Root Directory:` Contains the main Python scripts for launching and setting up YoBot, as well as the following subdirectories:
-    - `resources:` Contains all bot resources such as images, sounds, and texts. This includes things such as system text, avatars, and etc.
-    - `configs:` Contains INI configuration files for YoBot and core functionalities.
-    - `data:` Stores general data. Unused currently. Planned for any Cog or Discord data storage.
+    - `docs:` Contains the documentation for YoBot.
+    - `resources:` Contains all YoBot resources such as images, sounds, and texts.
+    - `configs:` Contains JSON configuration files for YoBot.
     - `logs:` The location for storing log files.
     - `src:` Contains the main source code for YoBot's features, divided into separate modules, including Cogs.
         - `bot:` This is where YoBot is stored. Contains anything especially particular for YoBot.
         - `events:` This is where all Discord related events will be stored. Unused currently.
         - `cogs:` This is where all Cogs will be stored.
-        - `utils` Contains helper functions for YoBot framework.
-<br>
-
-# #The Code
-Here is a brief description of what is going on under the hood so that you can get started.
-
-For more information, look into the code. There should be docstrings to help guide you.
-<br>
-<br>
-
-## yobot.py
-This is where the main YoBot class is defined. This class is derived from a superclass `discord.ext.commands.Bot`.
-
-When the class is instantiated, it creates a new instance of the YoBot class.
-
-The project refers to the instantiated YoBot as `self`, `yobot`, or `self.yobot`.
-
-These variables will represent the running instance of YoBot with all of its settings.
-
-<br>
-
-## main.py
-This script is where YoBot is launched from. It imports the YoBot class from `yobot.py` and the `setup_bot()` function from `setup.py`, and uses them to launch YoBot.
-
-It only serves as a seperate entry point for YoBot to begin.
-
-<br>
-
-## setup.py
-This is responsible for setting up the file structure, terminal, logging, configuration files, and returning a ready-to-start bot instance. 
-
-All functions in here have the goal of making a ready bot only.
-
-#### Key Functions:
-- `setup_bot()`: Sets up YoBot and returns a ready-to-start bot instance.
-- `setup_logging()`: Sets up the logging module and returns a logger instance.
-- `setup_cogs()`: Loads all available Cogs and Events into the loaded bot instance.
-
-<br>
-
-## yobotlib.py
-This script includes helper functions for the entire YoBot project. It is imported by all other scripts.
-
-#### Key Functions:
-
-- `log():` Logs a formatted message based on a message key or string argument.
-- `update_config():` Updates a config file without overwriting other keys.
-- `sync_commands():` Syncs the Discord commands with the Cogs modules.
-
-<br>
-
-## terminal_commands.py
-This is where all of the terminal commands are setup. Quickly change or add commands for the terminal.
-
-These commands are not part of the YoBot framework. They are only for the terminal.
-
-It is not advised to allow the YoBot or any Cog/Extension to use these commands.
-
-#### Key functions:
-- `handle_terminal_command():` The terminal listens to anything in this list and will execute the block the case matches. Has built-in command callback response.
-- `set_language():` Sets the language of the terminal messages. (Not Discord)
-
-<br>
-
-# #Extensions
-Extensions are Events, Cogs, and Plugins. These are drop in and out modules for YoBot to process.
-
-With these, YoBot can be very customizable and solve multiple problems.
-
-Below is a brief description of some of the ones that come included.
-
-<br>
-
-## discordcommandscog.py
-
-This is where all of the Discord commands are setup.
-Quickly change or add commands for the Discord bot.
-
-<br>
-
-## discordevents.py
-
-Events are listeners. Quickly change or add events for the Discord bot.
-You can tap into a listening event and add functionality to it.
-
-#### Key functions:
-- `on_connect():` This fires when YoBot is connected to Discord.
-- `on_ready():` This fires when YoBot is ready to be used.
-- `on_message():` This fires anything in this block when a message is received.
-
+        - `utils` Contains utility functions for YoBot.
 <br>
     
 ## #Thank You
@@ -234,24 +134,7 @@ Happy Coding!
 <br>
 
 ## License
-MIT License
-
-Copyright (c) 2023 Nick Rejcek
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+YoBot is licensed under the MIT License.
+You are free to use, modify, and distribute YoBot as you see fit.
+However, there are certain restrictions on the use of the YoBot name, logo, and code.
+See LICENSE.md for details.
