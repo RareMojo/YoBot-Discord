@@ -4,17 +4,23 @@ The `DiscordCommandsCog` class is a collection of commands that `YoBot` can exec
 
 This class inherits from the `commands.Cog` class from `discord.py` library.
 
+<br>
+
 ## Class Attributes
 
 - `yobot`: This represents an instance of the `YoBot` bot class.
 
+<br>
+
 ## Class Methods
 
-- `__init__(self, yobot)`
+#### `__init__(self, yobot)`
 
 This is the constructor for the `DiscordCommandsCog` class. 
 
 It initializes an instance of the class with a reference to the bot instance (`YoBot`).
+
+<br>
 
 ## Commands
 
@@ -28,9 +34,11 @@ The `@commands.command(name="")` decorator indicates that these methods are comm
 - `parent_command`: This is a parent command. It's part of a command group and other commands can be attached to it as "subcommands".
 - `sub_command`: This command is a subcommand of the parent_command. It's an example of a command that takes an argument from the user.
 
+<br>
+
 ## Function
 
-- `async def setup(yobot: commands.Bot) -> None`
+#### `async def setup(yobot: commands.Bot) -> None`
 
 This is a standalone asynchronous function which loads the `DiscordCommandsCog` into the bot instance. 
 
