@@ -71,7 +71,7 @@ The class has numerous listeners for different types of events including:
 
 ## Function
 
-- `async def setup(yobot: commands.Bot) -> None`
+#### `async def setup(yobot: commands.Bot) -> None`
 
 This is a standalone asynchronous function which loads the `DiscordEventsCog` into the bot instance. 
 
