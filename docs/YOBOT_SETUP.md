@@ -6,11 +6,15 @@ It sets up the necessary files and configurations required for the operation of 
 
 Once the files and configurations are set, it builds a new instance of the `YoBot` class to be launched.
 
+<br>
+
 ## Installation
 
 Like the `YoBotLogger`, `YoBotBuilder` is a custom Python module. 
 
 It's built in with the `YoBotBuilder` class, which is used to build an instance of the `YoBot` class.
+
+<br>
 
 ## Usage
 ### YoBotBuilder
@@ -33,6 +37,8 @@ yobot_builder = YoBotBuilder(
 - `avatar_file`: The path to the avatar file.
 - `cogs_dir`: The path to the cogs directory.
 
+<br>
+
 ## Setup Files and Configurations
 
 Before building a `YoBot` instance, ensure to set up the required files and configurations using the following methods:
@@ -44,6 +50,8 @@ yobot_builder.setup_config()
 
 - `setup_files`: Sets up the necessary files for `YoBot` to run.
 - `setup_config`: Sets up the configuration file for `YoBot`. If the configuration file is not found, it will prompt you to enter the necessary information to create a new configuration file.
+
+<br>
 
 ## Building YoBot
 
