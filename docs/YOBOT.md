@@ -14,6 +14,7 @@ It inherits from the `commands.Bot` class of the `discord.ext` module, and conta
 - `bot_name` (str): Contains the bot's name.
 - `presence` (str): Contains the bot's presence.
 - `owner_name` (str): Contains the bot owner's name.
+- `owner_id` (str): Contains the bot owner id.
 - `log` (`YoBotLogger`): The bot's logger instance.
 - `running` (bool): A flag to indicate whether the bot is currently running.
 
