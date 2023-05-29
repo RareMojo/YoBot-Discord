@@ -121,7 +121,7 @@ Change your avatar in `resources/images/avatar.png`. Swap for any 128x128 png/jp
 <br>
 
 ## Further Documentation
-
+- [All Docs](https://github.com/RareMojo/YoBot-Discord/tree/main/docs)
 - [main.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/MAIN.md)
 - [yobot.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/YOBOT.md)
 - [yobot_setup.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/YOBOT_SETUP.md)
