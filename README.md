@@ -81,7 +81,7 @@ This can be something as simple as custom Discord commands to tracking every Elo
 
 4. ### Run `YoBot`:
     - When launching the first time it will automatically ask you for inputs to configure `YoBot`.
-    - You <b>MUST</b> have your `discord_token` at a minimum for this step.
+    - You <b>MUST</b> have your `discord_token` at a minimum for this step. *NEVER SHARE THIS TOKEN*
     - Run `python .\main.py` to launch `YoBot`.
     - If you encounter any issues, please refer to the logging information outputted to the console or written to the log file.
 
@@ -97,6 +97,8 @@ The `config.json` file contains the main configuration settings for `YoBot`.
 
 Change your avatar in `resources/images/avatar.png`. Swap for any 128x128 png/jpg.
 
+*Never share your configs, tokens, ids, or other sensitive information online*
+
 ### Configuration file
 - `discord_token` Is the app secret key.
 - `owner_name` Sets `YoBot` owner name.
@@ -108,10 +110,9 @@ Change your avatar in `resources/images/avatar.png`. Swap for any 128x128 png/jp
 - `update_bot` Flag used for first time setup or updating `YoBot` with new settings.
 
 ### Project Structure
-- `Root Directory:` Contains the main Python scripts for launching and setting up `YoBot`, as well as the following subdirectories:
-    - `docs:` Contains the documentation for `YoBot`.
+- `YoBot-Discord:` Root directory, contains the main Python scripts for launching and setting up `YoBot`, as well as the following subdirectories:
     - `resources:` Contains all `YoBot` resources such as images, sounds, and texts.
-    - `configs:` Contains JSON configuration files for `YoBot`.
+    - `configs:` Contains JSON configuration files for `YoBot`. *DO NOT SHARE THIS FILE*
     - `logs:` The location for storing log files.
     - `src:` Contains the main source code for `YoBot`'s features, divided into separate modules, including `Cogs`.
         - `bot:` This is where `YoBot` is stored. Contains anything especially particular for `YoBot`.
@@ -120,14 +121,7 @@ Change your avatar in `resources/images/avatar.png`. Swap for any 128x128 png/jp
 <br>
 
 ## Further Documentation
-- [All Docs](https://github.com/RareMojo/YoBot-Discord/tree/main/docs)
-- [main.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/MAIN.md)
-- [yobot.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/YOBOT.md)
-- [yobot_setup.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/YOBOT_SETUP.md)
-- [yobot_logger.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/YOBOT_LOGGER.md)
-- [yobot_lib.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/YOBOT_LIB.md)
-- [discordeventscog.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/DISCORDEVENTSCOG.md)
-- [discordcommandscog.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/DISCORDCOMMANDSCOG.md)
+- [All Docs](https://github.com/RareMojo/YoBot-Discord/wiki)
 
 <br>
     
