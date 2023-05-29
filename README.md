@@ -115,7 +115,6 @@ Change your avatar in `resources/images/avatar.png`. Swap for any 128x128 png/jp
     - `logs:` The location for storing log files.
     - `src:` Contains the main source code for `YoBot`'s features, divided into separate modules, including `Cogs`.
         - `bot:` This is where `YoBot` is stored. Contains anything especially particular for `YoBot`.
-        - `events:` This is where all Discord related events will be stored. Unused currently.
         - `cogs:` This is where all Cogs will be stored.
         - `utils` Contains utility functions for `YoBot`.
 <br>
