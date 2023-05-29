@@ -3,7 +3,7 @@
 
 The `YoBot` project is a basic, structured, and customizable bot framework implemented in [Discord.py](https://discordpy.readthedocs.io/en/stable/api.html) 2.0+. 
 
-It comes prepared to with a localized terminal, extension loading, examples, and other essentials.
+It comes prepared with a localized terminal, extension loading, examples, and other essentials.
 
 The structure of the project and functionalities of each module are described below.
 <br>
