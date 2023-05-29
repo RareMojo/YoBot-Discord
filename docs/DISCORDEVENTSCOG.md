@@ -6,17 +6,23 @@ It inherits from `commands.Cog` class provided by `discord.py` library.
 
 These listeners are effectively "waiting" for specific events to occur when interacting with Discord, at which point they'll execute their associated code.
 
+<br>
+
 ## Class Attributes
 
 - `yobot`: Represents an instance of the `YoBot` bot class.
 
+<br>
+
 ## Class Methods
 
-- `__init__(self, yobot)`
+#### `__init__(self, yobot)`
 
 This is the constructor for the `DiscordEventsCog` class. 
 
 It initializes an instance of the class with a reference to the bot instance (`YoBot`).
+
+<br>
 
 ## Event Listeners
 
@@ -60,6 +66,8 @@ The class has numerous listeners for different types of events including:
 - `on_error`: Called when an error occurs.
 - `on_socket_raw_receive`: Called when a raw websocket message is received.
 - `on_socket_raw_send`: Called when a raw websocket message is sent.
+
+<br>
 
 ## Function
 
