@@ -69,7 +69,7 @@ This can be something as simple as custom Discord commands to tracking every Elo
 - IDE of choice if you want to extend the app ([VSCode](https://code.visualstudio.com/) is my goto)
 
 1. ### Clone the repository:
-    - `git clone https://github.com/RareMojo/YoBot-Discord`
+    - `git clone https://github.com/RareMojo/YoBot-Discord.git`
 
 2. ### Install the required dependencies:
     - `pip install -r requirements.txt`
