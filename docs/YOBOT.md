@@ -4,6 +4,8 @@ This class represents the main `YoBot` bot class that handles initialization and
 
 It inherits from the `commands.Bot` class of the `discord.ext` module, and contains multiple methods and attributes to manage the bot's operation.
 
+<br>
+
 ## Class Attributes
 - `config` (dict): Stores the bot's configuration file.
 - `config_file` (str): Holds the path to the bot's configuration file.
@@ -15,25 +17,29 @@ It inherits from the `commands.Bot` class of the `discord.ext` module, and conta
 - `log` (`YoBotLogger`): The bot's logger instance.
 - `running` (bool): A flag to indicate whether the bot is currently running.
 
+<br>
+
 ## Class Methods
 
-### `__init__(self, intents, logger, config_file, avatar, cogs_dir)`
+#### `__init__(self, intents, logger, config_file, avatar, cogs_dir)`
 - The constructor for the `YoBot` class. 
     It initializes an instance of the class with the given parameters.
     The configuration file is loaded during this initialization process.
 
-### `start_bot(self)`
+#### `start_bot(self)`
 - This method starts the bot.
     It first loads all `cogs`, and then initiates two asynchronous tasks - starting the bot and starting the terminal command loop.
 
-### `stop_bot(self)`
+#### `stop_bot(self)`
 - This method stops the bot.
     It sets the running flag to False.
 
-### `load_cogs(self)`
+#### `load_cogs(self)`
 - This method loads all the `cogs` in the cogs directory.
     Each cog is an extension that adds functionality to the bot.
     This function goes through each file in the specified cogs directory, and loads any files that end with '`cog.py`' as a bot extension.
+
+<br>
 
 ## Execution
 
