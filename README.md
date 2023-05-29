@@ -119,6 +119,18 @@ Change your avatar in `resources/images/avatar.png`. Swap for any 128x128 png/jp
         - `cogs:` This is where all Cogs will be stored.
         - `utils` Contains utility functions for YoBot.
 <br>
+
+## Further Documentation
+
+- [main.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/MAIN.md)
+- [yobot.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/YOBOT.md)
+- [yobot_setup.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/YOBOT_SETUP.md)
+- [yobot_logger.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/YOBOT_LOGGER.md)
+- [yobot_lib.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/YOBOT_LIB.md)
+- [discordeventscog.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/DISCORDEVENTSCOG.md)
+- [discordcommandscog.py](https://github.com/RareMojo/YoBot-Discord/blob/main/docs/DISCORDCOMMANDSCOG.md)
+
+<br>
     
 ## Thank You
 Thank you for your interest in the YoBot project. This endeavor is a product of commitment to providing a customizable, user-friendly bot.
