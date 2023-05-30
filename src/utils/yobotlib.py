@@ -1,112 +1,202 @@
-import configparser
+import discord
 import json
-import logging
-import os
 
 
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..',))
-LANGUAGE_DEFAULT = os.path.join(ROOT_DIR, 'resources', 'texts', 'system', 'languages', 'EN_system_messages.json')
-CORE_CONFIG_FILE = os.path.join(ROOT_DIR, 'configs', 'core_config.ini')
-BOT_CONFIG_FILE = os.path.join(ROOT_DIR, 'configs', 'bot_config.ini')
-LOG_FILE = os.path.join(ROOT_DIR, 'logs', 'log.txt')
-AVATAR_FILE = os.path.join(ROOT_DIR, 'resources', 'images', 'avatar.png')
-COGS_DIR = os.path.join(ROOT_DIR, 'src', 'cogs')
-
-
-def log(msg_key=None, **msg_args):
-    """
-    Logs a formatted message based on the provided message key and arguments.
-
-    Parameters:
-        msg_key (str): The key of the message to be logged.
-        **msg_args: Keyword arguments for formatting the message.
-    """
-    if msg_key:
-        if os.path.isfile(CORE_CONFIG_FILE):
-            config = get_config('core')
-            CURRENT_LANGUAGE = config.get('settings', 'language')
-            language = json.loads(open(LANGUAGE_DEFAULT).read())
-            language = json.loads(open(CURRENT_LANGUAGE).read())
-
-        message = language.get(msg_key)
-
-        if message is not None:
-            if isinstance(message, dict):
-                title = message.get('title')
-                logging.info(title)
-                for sub_key, sub_message in message.items():
-                    if sub_key != 'title':
-                        try:
-                            formatted_sub_message = sub_message.format(**msg_args)
-                            logging.info(formatted_sub_message)
-                        except KeyError as e:
-                            logging.error(f"KeyError: {e}. Message key '{msg_key}' failed to format because {e} key is missing from msg_args.")
-            else:
-                try:
-                    formatted_message = message.format(**msg_args)
-                    logging.info(formatted_message)
-                except KeyError as e:
-                    logging.error(f"KeyError: {e}. Message key '{msg_key}' failed to format because {e} key is missing from msg_args.")
-        else:
-            logging.info(f"Message key '{msg_key}' not found.")
+async def update_yobot(yobot):
+    """Updates YoBot's name, presence, and avatar to config values on Discord servers."""
+    config_file = yobot.config_file
+    successful = True # Whether or not the update was successful.
+    yobot.log.info('Checking for updates to YoBot settings...')
+    if yobot.config['update_bot'] == True:
+        yobot.log.info('First run or changes detected!')
+        yobot.log.info('Setting name, presence, and avatar to config values.')
+        yobot.log.warning('This action is rate limited, so to change it later, edit the config file.')
+        yobot.log.warning('You may also manually set these attributes with the terminal.')
+        try:
+            await yobot.user.edit(username=yobot.bot_name, avatar=yobot.avatar) # Try to change the name and avatar on Discord servers.
+            await yobot.change_presence(activity=discord.Game(name=yobot.presence)) # Try to change the presence on Discord servers.
+        except Exception as e:
+            yobot.log.error('Error: {}'.format(e))
+            yobot.log.warning('Bot name, avatar, or presence not changed on Discord servers.')
+            yobot.log.warning('This will be run again on next startup.')
+            successful = False
+ 
+        if successful == True:
+            yobot.log.info('Successfully synchronized YoBot settings with Discord.')
+            yobot.config['update_bot'] = False
+            with open(config_file, 'w') as f: # Update the config file.
+                json.dump(yobot.config, f, indent=4)
     else:
-        logging.info(msg_args.get('msg', ''))
-
-
-def get_config(file_path=None):
-    """
-    Returns the data from a config file.
+        yobot.log.info('YoBot settings are up to date.')
+        yobot.log.info('Connected to Discord.')
+                
     
-    Parameters:
-        file_path (str): The path to the config file.
-        Sub for 'bot' and 'core' for their respective config files.
+async def welcome_to_yobot(yobot):
+    """Prints a welcome message to the terminal."""
+    yobot.log.info('YoBot Instance Details:')
+    yobot.log.info('Display name: {}'.format(yobot.bot_name)) # Print YoBot's current display name.
+    yobot.log.info('Presence: {}'.format(yobot.presence)) # Print YoBot's current presence.
     
-    Returns:
-        config (configparser.ConfigParser): The data from the config file.
-    """
-    match file_path:
-        case 'bot':
-            file_path = BOT_CONFIG_FILE
-        case 'core':
-            file_path = CORE_CONFIG_FILE
-
-    if os.path.isfile(file_path) and file_path.endswith('.ini'):
-        config_file = configparser.ConfigParser()
-        config_file.read(file_path)
-        return config_file
-    else:
-        log(msg_key='error', error='Config file does not exist.')
-
-
-def update_config_file(file_path=None, keys=None):
-    """
-    Updates the config file without damaging it.
-    
-    Parameters:
-        file_path (str): The path to the config file.
-        keys (dict): The data to be saved.
-    """
-    match file_path:
-        case 'bot':
-            file_path = BOT_CONFIG_FILE
-        case 'core':
-            file_path = CORE_CONFIG_FILE
-
-    config = configparser.ConfigParser()
-    config.read(file_path)
-    
-    for section, options in keys.items():
-        if not config.has_section(section):
-            config.add_section(section)
+    for guild in yobot.guilds: # Print the guilds YoBot is connected to.
+        yobot.log.info(f'Linked with {guild} | ID: {guild.id}')
         
-        for option, value in options.items():
-            config.set(section, option, value)
+    yobot.log.info('YoBot is online and ready.')
+    if not yobot.config['update_bot']: # If this is not the first run, print a welcome back message.
+        yobot.log.info('Welcome back to YoBot, {}!'.format(yobot.config['owner_name']))
+        yobot.log.info('Type "help" for a list of terminal commands.')
+    else: # If this is the first run, print a welcome message.
+        yobot.log.info('Welcome to YoBot, {}!'.format(yobot.config['owner_name']))
+        yobot.log.info('Type "help" for a list of terminal commands.')
+        
+        
+def exit_bot_terminal(yobot):
+    """Shutsdown YoBot from the terminal."""
+    yobot.stop_bot()
 
-    with open(file_path, 'w') as config_file:
-        config.write(config_file)
+
+async def set_bot_name(yobot):
+    """
+    Changes YoBot's name from the terminal.
+    
+    This updates the config file and Discord servers.
+    """
+    yobot.log.info(f'Current name: {yobot.config["bot_name"]}')
+    change_bot_name = get_boolean_input(yobot, 'Do you want to change YoBots name? (y/n) ')
+    config = yobot.config
+    if change_bot_name == True:
+        new_name = input('Enter new bot name: ')
+        config['bot_name'] = new_name
+        config['update_bot'] = True
+        with open(yobot.config_file, 'w') as f: # Update the config file.
+            json.dump(config, f, indent=4)
+        try:
+            await yobot.user.edit(username=new_name) # Try to change the name on Discord servers.
+            yobot.log.info('Config change, bot_name: {} -> {}'.format(yobot.config['bot_name'], new_name))
+        except Exception as e:
+            yobot.log.error('Error: {}'.format(e))
+            yobot.log.warning('Bot name not changed on Discord servers.')
+    else:
+        yobot.log.info('Name not changed.')
 
 
-def get_boolean_input(prompt):
+async def set_bot_avatar(yobot):
+    """
+    Changes YoBot's avatar from the terminal.
+    
+    This updates the config file and Discord servers.
+    """
+    yobot.log.info('This sets the avatar to the image at ../resources/images/avatar.png')
+    change_avatar = get_boolean_input(yobot, 'Do you want to change the avatar? (y/n) ')
+    successful = True
+    config = yobot.config
+    if change_avatar == True:
+        try:
+            await yobot.user.edit(avatar=yobot.avatar) # Try to change the avatar on Discord servers.
+        except Exception as e:
+            yobot.log.error('Error: {}'.format(e))
+            yobot.log.warning('Avatar not changed on Discord servers.')
+            yobot.log.warning('It will automatically be changed on the next startup.')
+            successful = False
+            
+        if successful == False:
+            config['update_bot'] = True
+            with open(yobot.config_file, 'w') as f: # Update the config file.
+                json.dump(config, f, indent=4)
+                
+        if successful == True:
+            yobot.log.info('Avatar changed.')
+    else:
+        yobot.log.info('Avatar not changed.')
+
+
+async def set_bot_presence(yobot):
+    """
+    Changes YoBot's presence from the terminal.
+    
+    This updates the config file and Discord servers.
+    """
+    yobot.log.info('Current presence: {}'.format(yobot.presence))
+    update_presence = get_boolean_input(yobot, 'Do you want to change the presence? (y/n) ')
+    config = yobot.config
+    if update_presence == True:
+        new_presence = input('Enter new presence: ')
+        config['presence'] = new_presence
+        config['update_bot'] = True
+        with open(yobot.config_file, 'w') as f: # Update the config file.
+            json.dump(config, f, indent=4)
+        try:
+            await yobot.change_presence(activity=discord.Game(name=new_presence)) # Try to change the presence on Discord servers.
+            yobot.log.info('Config change, presence: {} -> {}'.format(yobot.presence, new_presence))
+        except Exception as e:
+            yobot.log.error('Error: {}'.format(e))
+            yobot.log.warning('Presence not changed.')
+    else:
+        yobot.log.info('Presence not changed.')
+
+
+async def sync_commands(yobot):
+    """Synchronizes YoBot's commands from the terminal."""
+    synchronize = get_boolean_input(yobot, 'Do you want to synchronize commands? (y/n) ')
+    if synchronize == True:
+        sync_list = await yobot.tree.sync()  # Try to update commands on Discord servers.
+        yobot.log.info(f'{len(sync_list)} commands synchronized.')
+    else:
+        yobot.log.info('Commands not synchronized.')
+        
+        
+async def set_owner(yobot):
+    """
+    Changes YoBot's owner from the terminal.
+    
+    This updates the config file and the respected admin of YoBot.
+    """
+    yobot.log.info(f'Current owner: {yobot.config["owner_name"]} - {yobot.config["owner_id"]}')
+    change_owner_name = get_boolean_input(yobot, 'Do you want to change YoBots owner? (y/n) ')
+    config = yobot.config
+    if change_owner_name == True:
+        new_owner_name = input('Enter new owner name: ')
+        new_owner_id = input('Enter new owner id: ')
+        config['owner_name'] = new_owner_name
+        config['owner_id'] = new_owner_id
+        with open(yobot.config_file, 'w') as f: # Update the config file.
+            json.dump(config, f, indent=4)
+            
+        yobot.log.info('Config change, owner_name: {} -> {}'.format(yobot.config['owner'], new_owner_name))
+        yobot.log.info('Config change, owner_id: {} -> {}'.format(yobot.config['owner_id'], new_owner_id))
+    else:
+        yobot.log.info('Owner not changed.')
+
+
+def ping(yobot):
+    """Pong!"""
+    yobot.log.info('Pong!')
+
+
+def show_help(yobot):
+    """Shows the help menu."""
+    black = '\033[30m'
+    cyan = '\033[36m'
+    green = '\033[32m'
+    purple = '\033[35m'
+    bold = '\033[1m'
+    reset = '\033[0m'
+    yobot.log.info(f"{black}{'-' * 20}[ {purple}{bold}Available commands{reset}{black} ]{'-' * 20}{reset}")
+    yobot.log.info('')
+    yobot.log.info(f"{cyan}Simply type the command you want to execute and press enter.{reset}")
+    yobot.log.info(f"{cyan}A brief description of the command will be displayed below.{reset}")
+    yobot.log.info('')
+    yobot.log.info(f"{green}setbotname{' ' * 12}{black}- Changes the current YoBot name.{reset}")
+    yobot.log.info(f"{green}setavatar{' ' * 13}{black}- Changes the current YoBot avatar.{reset}")
+    yobot.log.info(f"{green}setstatus{' ' * 13}{black}- Changes the current YoBot status.{reset}")
+    yobot.log.info(f"{green}synccommands{' ' * 10}{black}- Synchronizes commands with Discord.{reset}")
+    yobot.log.info(f"{green}exit{' ' * 18}{black}- Shuts YoBot and the script down.{reset}")
+    yobot.log.info(f"{green}ping{' ' * 18}{black}- Pongs.{reset}")
+    yobot.log.info(f"{green}help{' ' * 18}{black}- Displays this message.{reset}")
+    yobot.log.info('')
+    yobot.log.info(f"{black}{'-' * 18}[ {purple}{bold}End available commands{reset}{black} ]{'-' * 18}{reset}")
+    
+    
+def get_boolean_input(yobot, prompt: str):
     """
     Returns a boolean input.
     
@@ -120,53 +210,4 @@ def get_boolean_input(prompt):
         elif user_input.lower() in ['false', 'f', 'no', 'n']:
             return False
         else:
-            log(msg_key="error", error=f"Invalid input: {user_input}")
-
-
-async def sync_commands(yobot):
-    """
-    Syncs all Cog commands to the Discord bot.
-    """
-    sync_list = await yobot.tree.sync()
-    log(msg='Loaded {} commands.'.format(len(sync_list)))
-    return sync_list
-
-
-async def set_avatar(yobot):
-    """
-    Sets YoBot's avatar.
-    
-    Note: Rate limited by the Discord API.
-
-    Call this only when necessary and as few times as possible.
-    """
-    try:
-        with open(AVATAR_FILE, "rb") as f:
-            avatar_image = f.read()
-        await yobot.user.edit(avatar=avatar_image)
-    except Exception as e:
-        log(msg_key='error', error=e)
-        log(msg='Avatar change will process next restart or reload.')
-
-
-async def set_display_name(yobot, display_name=None):
-    """
-    Sets YoBot's display name.
-    
-    Note: Rate limited by the Discord API.
-
-    Call this only when necessary and as few times as possible.
-    """
-    if not display_name:
-        display_name = get_config('bot').get('settings', 'display_name')
-
-    update = {'settings': {'display_name': display_name}}
-    update_config_file('bot', update)
-
-    try:
-        await yobot.user.edit(username=display_name)
-    except Exception as e:
-        log(msg_key='error', error=e)
-        log(msg='Name change will process next restart or reload.')
-
-    log(msg='Bot name changed to {}!'.format(display_name))
+            yobot.log.warning('Invalid input. Try again.')

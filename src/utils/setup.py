@@ -1,194 +1,94 @@
-import configparser
-import logging
+import json
 import os
-from logging.handlers import RotatingFileHandler
 
 from discord import Intents
 
-from .terminal_commands import set_language
-from .yobotlib import get_config, log
+from utils.logger import YoBotLogger
 
 
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..',))
-LANGUAGES_DIR = os.path.join(ROOT_DIR, 'resources', 'texts', 'system', 'languages')
-LANGUAGE_EXTRAS_DIR = os.path.join(ROOT_DIR, 'resources', 'texts', 'system', 'languages', 'extras')
-CORE_CONFIG_FILE = os.path.join(ROOT_DIR, 'configs', 'core_config.ini')
-BOT_CONFIG_FILE = os.path.join(ROOT_DIR, 'configs', 'bot_config.ini')
-LOG_FILE = os.path.join(ROOT_DIR, 'logs', 'log.txt')
-AVATAR_FILE = os.path.join(ROOT_DIR, 'resources', 'images', 'avatar.png')
-COGS_DIR = os.path.join(ROOT_DIR, 'src', 'cogs')
-EVENTS_DIR = os.path.join(ROOT_DIR, 'src', 'events')
-
-
-def setup_logging():
-    """Sets up the logging module."""
-    formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', datefmt='%m-%d-%Y %H:%M:%S')
-
-    file_handler = RotatingFileHandler(LOG_FILE, maxBytes=2000, backupCount=1)
-    file_handler.setLevel(logging.INFO)
-    file_handler.setFormatter(formatter)
-
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(formatter)
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    for handler in logger.handlers[:]:
-        logger.removeHandler(handler)
-
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
-
-    log(msg_key='success', success='Console setup')
-
-
-def setup_files():
-    """Sets up the required file structure."""
-    if not os.path.isdir('../logs'):
-        log(msg_key='error', error='Logs directory not found.')
-        log(msg='Creating logs directory...')
-        os.mkdir('../logs')
-    
-    if not os.path.isdir('../data'):
-        log(msg_key='error', error='Data directory not found.')
-        log(msg='Creating data directory...')
-        os.mkdir('../data')
-
-    log(msg_key='success', success='File creation')
-
-
-def setup_core_config():
-    """Sets up the core config."""
-    if os.path.isfile(CORE_CONFIG_FILE):
-        log(msg_key='loaded', loaded='Core Config')
-        return None
-
-    log(msg_key='setup_wizard')
-
-    core = {}
-    core['owner_name'] = input('Owner Name: ')
-    core['debug'] = input('Enable Debug: (True/False) ')
-    core['language'] = set_language()
-
-    data = {'settings': core}
-
-    config = configparser.ConfigParser()
-    for section, section_data in data.items():
-        config[section] = section_data
-        with open(CORE_CONFIG_FILE, 'w') as file:
-            config.write(file)
-
-    log(msg_key='success', success='Core Setup Wizard')
-
-
-def setup_bot_config():
-    """Sets up the Discord bot config."""
-    if os.path.isfile(BOT_CONFIG_FILE):
-        log(msg_key='loaded', loaded='Bot Config')
-        return
-    
-    log(msg_key='setup_wizard')
-
-    bot_keys = {}
-    discord_token = input('Discord API Key: ')
-    bot_keys['discord_token'] = discord_token
-
-    bot_settings = {}
-    bot_settings['display_name'] = input('Bot Display Name: ')
-    bot_settings['now_playing'] = input('Now Playing Message (optional): ')
-    bot_settings['first_run'] = True
-
-    bot_intents = {}
-    bot_intents['all'] = input('All Intents (True/False): ')
-
-    bot_intents['all'] = bool(bot_intents['all'])
-    if not bot_intents['all'] or bot_intents['all'] == False:
-        bot_intents['default'] = bool(bot_intents['default'])
-
-    data = {'keys': bot_keys, 'settings': bot_settings, 'intents': bot_intents}
-    
-    config = configparser.ConfigParser()
-    for section, section_data in data.items():
-        config[section] = section_data
-        with open(BOT_CONFIG_FILE, 'w') as file:
-            config.write(file)
-
-    log(msg_key='success', success='Bot Setup Wizard')
-
-
-def set_intents():
-    """Sets the Discord intents based on the Discord bot_config.ini."""
-    user_intents = get_config('bot')
-    intents = Intents.default()
-    intents.message_content = True
-
-    if user_intents.getboolean('intents', 'all'):
-        intents = Intents.all()
-
-    return intents
-
-
-async def setup_cogs(yobot):
+class YoBotBuilder:
     """
-    Loads all cogs and events from the cogs/events directory.
-
-    Args:
-        bot (YoBot): The bot instance
-    """
-    log(msg="Loading extensions...")
-    loaded_extensions = 0
-
-    for filename in os.listdir(COGS_DIR):
-        if filename.endswith('cog.py'):
-            cog_name = f'cogs.{filename[:-3]}'
-            await yobot.load_extension(cog_name)
-            loaded_extensions += 1
-
-    for filename in os.listdir(EVENTS_DIR):
-        if filename.endswith('events.py'):
-            event_name = f'events.{filename[:-3]}'
-            await yobot.load_extension(event_name)
-            loaded_extensions += 1
+    The YoBotBuilder class is used to build a new instance of the YoBot class.
     
-    for filename in os.listdir(COGS_DIR):
-        if filename.endswith('cog.py'):
-            log(msg_key='loaded', loaded=f"[{filename[:-3]}]")
-    
-    for filename in os.listdir(EVENTS_DIR):
-        if filename.endswith('events.py'):
-            log(msg_key='loaded', loaded=f"[{filename[:-3]}]")
-
-    log(msg=f"Total extensions loaded: {loaded_extensions}")
-
-
-def setup_bot(yobot):
+    Attributes:
+        yobot (YoBot): The YoBot class to build.
+        log_file (str): The path to the log file.
+        config_file (str): The path to the config file.
+        avatar_file (str): The path to the avatar file.
+        cogs_dir (str): The path to the cogs directory.    
     """
-    Sets up YoBot.
-    This is to be called from the main.py file.
+    def __init__(self, yobot, log_file, config_file, avatar_file, cogs_dir):
+        self.yobot = yobot
+        self.config_file = config_file
+        self.log_file = log_file
+        self.avatar_file = avatar_file
+        self.cogs_dir = cogs_dir
+        self.log = YoBotLogger('YoBot', self.log_file, level=0, maxBytes=1000000, backupCount=1) # Setup the logger.
 
-    Args:
-        bot (YoBot): The bot class
 
-    Returns:
-        YoBot: The bot instance
-    """
-    setup_files()
-    setup_core_config()
-    setup_bot_config()
-    setup_logging()
+    def setup_files(self):
+        """Sets up the necessary files for YoBot to run."""
+        if not os.path.isdir(self.log_file.rsplit('/', 1)[0]):
+            self.log.error('Logs directory not found.')
+            self.log.warning('Creating logs directory...')
+            os.mkdir(self.log_file.rsplit('/', 1)[0])
 
-    config = get_config('bot')
-    intents = set_intents()
+        if not os.path.isdir(self.config_file.rsplit('/', 1)[0]):
+            self.log.error('Configs directory not found.')
+            self.log.warning('Creating configs directory...')
+            os.mkdir(self.config_file.rsplit('/', 1)[0])
 
-    with open(AVATAR_FILE, "rb") as f:
-        avatar_image = f.read()
+        self.log.info('YoBot preparing to start...')
 
-    return yobot(
-        intents=intents,
-        display_name=config["settings"]["display_name"],
-        now_playing=config["settings"]["now_playing"],
-        discord_token=config["keys"]["discord_token"],
-        avatar=avatar_image
-    )
+
+    def setup_config(self):
+        """
+        Sets up the config file for YoBot. 
+        
+        If the config file is not found, the user will be prompted to enter the necessary information to create the config file.
+        """
+        if not os.path.isfile(self.config_file):
+            self.log.error('Config file not found.')
+            self.log.warning('Setting up config...')
+            self.log.info('Please enter the following information to set up the config file.')
+            config = {}
+            config['discord_token'] = input('Discord Token: ')
+            config['owner_name'] = input('Owner Name: ')
+            config['owner_id'] = input('Owner ID: ')
+            config['prefix'] = input('Command Prefix: ')
+            config['bot_name'] = input('Display Name: ')
+            config['presence'] = input('Presence: ')
+            config['debug'] = input('Enable Debug: (True/False) ') # This is a flag to indicate whether or not to enable debug mode.
+            config['update_bot'] = True # This is a flag to indicate that YoBot needs to synchronize with the config file.
+
+            with open(self.config_file, 'w') as f: # Save the config file.
+                config = json.dumps(config, indent=4)
+                f.write(config)
+                self.log.info('Config setup complete.')
+        else:
+            self.log.info('Config file found.')
+
+
+    def yobot_build(self):
+        """The build method builds a new instance of the YoBot class.
+
+        Returns:
+            YoBot: A newly prepared instance of the YoBot class.
+        """
+        self.setup_files()
+        self.setup_config()
+
+        intents = Intents.default() # Set Discord intents.
+        intents.message_content = True
+        intents.members = True
+
+        with open(self.avatar_file, 'rb') as f: # Read the avatar file as bytes.
+            avatar = f.read()
+
+        return self.yobot(
+            logger=self.log,
+            intents=intents,
+            config_file=self.config_file, # Pass the config file path to YoBot to easily access it.
+            avatar=avatar,
+            cogs_dir=self.cogs_dir
+        )
