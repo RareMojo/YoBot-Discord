@@ -3,7 +3,7 @@ import os
 
 from discord import Intents
 
-from utils.yobot_logger import YoBotLogger
+from utils.logger import YoBotLogger
 
 
 class YoBotBuilder:
@@ -69,7 +69,7 @@ class YoBotBuilder:
             self.log.info('Config file found.')
 
 
-    def build(self):
+    def yobot_build(self):
         """The build method builds a new instance of the YoBot class.
 
         Returns:

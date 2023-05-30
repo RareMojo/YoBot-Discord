@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 
-class DiscordCommandsCog(commands.Cog, name="Discord Commands", description="All available Discord commands."):
+class YoBotCommandsCog(commands.Cog, name="YoBot Discord Commands", description="All available Discord commands."):
   """Discord commands for YoBot to execute.
 
   Args:
@@ -53,4 +53,4 @@ class DiscordCommandsCog(commands.Cog, name="Discord Commands", description="All
     
 async def setup(yobot: commands.Bot) -> None:
   """Loads the cog."""
-  await yobot.add_cog(DiscordCommandsCog(yobot))
+  await yobot.add_cog(YoBotCommandsCog(yobot))

@@ -2,7 +2,7 @@ import asyncio
 import os
 
 from bot.yobot import YoBot
-from utils.yobot_setup import YoBotBuilder
+from utils.setup import YoBotBuilder
 
 
 def launch_bot():
@@ -13,7 +13,7 @@ def launch_bot():
                            f'{root_dir}/configs/config.json',
                            f'{root_dir}/resources/images/avatar.png',
                            f'{root_dir}/src/cogs')
-    bot = builder.build()
+    bot = builder.yobot_build()
     asyncio.run(bot.start_bot())
 
 

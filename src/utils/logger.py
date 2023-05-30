@@ -4,7 +4,7 @@ import os
 import re
 from logging.handlers import RotatingFileHandler
 
-from utils.yobot_lib import exit_bot_terminal, set_bot_name, set_bot_avatar, set_bot_presence, set_owner, sync_commands, ping, show_help 
+from utils.yobotlib import exit_bot_terminal, set_bot_name, set_bot_avatar, set_bot_presence, set_owner, sync_commands, ping, show_help 
 
 
 class YoBotLogger(logging.Logger):

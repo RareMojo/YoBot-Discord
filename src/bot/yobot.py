@@ -4,7 +4,7 @@ import os
 
 from discord.ext import commands
 
-from utils.yobot_logger import terminal_command_loop
+from utils.logger import terminal_command_loop
 
 
 class YoBot(commands.Bot):
