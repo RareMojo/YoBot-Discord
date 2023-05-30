@@ -42,7 +42,7 @@ Some included commands are `exit`, `help`, `setbotname`, and more.
 
 You can easily create new commands for the terminal.
 
-Start creating them in `yobot_logger.py` within class `YobotTerminalCommands()` by calling functions from `yobot_lib.py`.
+Start creating them in `logger.py` within class `YobotTerminalCommands()` by calling functions from `yobotlib.py`.
 
 This allows `YoBot` to still be utilized as a regular Python-bot at its core.
 
@@ -82,7 +82,7 @@ This can be something as simple as custom Discord commands to tracking every Elo
 4. ### Run `YoBot`:
     - When launching the first time it will automatically ask you for inputs to configure `YoBot`.
     - You <b>MUST</b> have your `discord_token` at a minimum for this step. *NEVER SHARE THIS TOKEN*
-    - Run `python .\main.py` to launch `YoBot`.
+    - Run `python .\launch.py` to launch `YoBot`.
     - If you encounter any issues, please refer to the logging information outputted to the console or written to the log file.
 
 5. ### Edit and Add
