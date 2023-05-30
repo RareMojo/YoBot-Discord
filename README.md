@@ -63,6 +63,7 @@ This can be something as simple as custom Discord commands to tracking every Elo
 
 ## Installation
 ### Prerequisites
+- See [venv install page](https://github.com/RareMojo/YoBot-Discord/wiki/VirtualEnvironment) for setting up a virtual environment
 - Discord Account, and [Discord App](https://discord.com/)
 - [Python 3.10.9+](https://www.python.org/downloads/)
 - requirements.txt
