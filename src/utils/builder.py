@@ -1,12 +1,13 @@
 import json
 import os
-
 from discord import Intents
 
+from bot.yobot import YoBot
 from utils.logger import YoBotLogger
+from utils.yobotlib import download_cogs
 
 
-class YoBotBuilder:
+class YoBotBuilder(YoBot):
     """
     The YoBotBuilder class is used to build a new instance of the YoBot class.
     
@@ -17,8 +18,8 @@ class YoBotBuilder:
         avatar_file (str): The path to the avatar file.
         cogs_dir (str): The path to the cogs directory.    
     """
-    def __init__(self, yobot, log_file, config_file, avatar_file, cogs_dir):
-        self.yobot = yobot
+    def __init__(self: 'YoBotBuilder', log_file: str, config_file: str, avatar_file: str, cogs_dir: str):
+        self.yobot = None
         self.config_file = config_file
         self.log_file = log_file
         self.avatar_file = avatar_file
@@ -56,7 +57,7 @@ class YoBotBuilder:
             config['owner_name'] = input('Owner Name: ')
             config['owner_id'] = input('Owner ID: ')
             config['prefix'] = input('Command Prefix: ')
-            config['bot_name'] = input('Display Name: ')
+            config['bot_name'] = input('Bot Name: ')
             config['presence'] = input('Presence: ')
             config['debug'] = input('Enable Debug: (True/False) ') # This is a flag to indicate whether or not to enable debug mode.
             config['update_bot'] = True # This is a flag to indicate that YoBot needs to synchronize with the config file.
@@ -69,26 +70,44 @@ class YoBotBuilder:
             self.log.info('Config file found.')
 
 
+    def setup_cogs(self):
+        """Downloads the selected cogs from the YoBot repository if the option is selected."""
+        if not os.path.isdir(self.cogs_dir):
+            self.log.error('Cogs directory not found.')
+            self.log.warning('Creating cogs directory...')
+            os.mkdir(self.cogs_dir)
+        else:
+            self.log.info('Cogs directory found.')
+            if self.config_file:
+                with open(self.config_file, 'r') as f:
+                    config = json.load(f)
+                    if config['update_bot']:
+                        self.log.info('Running first time Cog installation...')
+                        download_cogs(self, self.cogs_dir) 
+                        self.log.info('Cog installation complete.')
+
+
+
     def yobot_build(self):
         """The build method builds a new instance of the YoBot class.
 
         Returns:
             YoBot: A newly prepared instance of the YoBot class.
         """
+        self.yobot = YoBot
+        
         self.setup_files()
         self.setup_config()
+        self.setup_cogs()
 
         intents = Intents.default() # Set Discord intents.
         intents.message_content = True
         intents.members = True
-
-        with open(self.avatar_file, 'rb') as f: # Read the avatar file as bytes.
-            avatar = f.read()
-
+        
         return self.yobot(
-            logger=self.log,
             intents=intents,
             config_file=self.config_file, # Pass the config file path to YoBot to easily access it.
-            avatar=avatar,
-            cogs_dir=self.cogs_dir
+            avatar=self.avatar_file,
+            cogs_dir=self.cogs_dir,
+            logger=self.log 
         )

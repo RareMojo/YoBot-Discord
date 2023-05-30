@@ -20,6 +20,9 @@ subject to the following conditions wherein the author (Nicolas 'RareMojo' Rejce
 8. You acknowledge that the author of YoBot has the right to remove any projects or repos that redistribute
     the YoBot brand or code without permission or without proper credit. 
 
+The author does not own, nor claim to own, the rights to the Discord name, logo, or code.
+The author does not own, nor claim to own, the rights to the Discord.py library.
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

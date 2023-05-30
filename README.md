@@ -42,7 +42,7 @@ Some included commands are `exit`, `help`, `setbotname`, and more.
 
 You can easily create new commands for the terminal.
 
-Start creating them in `yobot_logger.py` within class `YobotTerminalCommands()` by calling functions from `yobot_lib.py`.
+Start creating them in `logger.py` within class `YobotTerminalCommands()` by calling functions from `yobotlib.py`.
 
 This allows `YoBot` to still be utilized as a regular Python-bot at its core.
 
@@ -63,6 +63,7 @@ This can be something as simple as custom Discord commands to tracking every Elo
 
 ## Installation
 ### Prerequisites
+- See [venv install page](https://github.com/RareMojo/YoBot-Discord/wiki/VirtualEnvironment) for setting up a virtual environment
 - Discord Account, and [Discord App](https://discord.com/)
 - [Python 3.10.9+](https://www.python.org/downloads/)
 - requirements.txt
@@ -72,7 +73,8 @@ This can be something as simple as custom Discord commands to tracking every Elo
     - `git clone https://github.com/RareMojo/YoBot-Discord.git`
 
 2. ### Install the required dependencies:
-    - `pip install -r requirements.txt`
+    - `pip install -r requirements.txt` To install all dependencies, including [Discord.py](https://discordpy.readthedocs.io/en/stable/api.html).
+    - `pip install PyNaCl` If you want to use voice features. (Not required)
 
 3. ### Invite `YoBot`:
     - Visit [Discord Developer Portal](https://discord.com/developers/applications) and create an application.
@@ -82,12 +84,13 @@ This can be something as simple as custom Discord commands to tracking every Elo
 4. ### Run `YoBot`:
     - When launching the first time it will automatically ask you for inputs to configure `YoBot`.
     - You <b>MUST</b> have your `discord_token` at a minimum for this step. *NEVER SHARE THIS TOKEN*
-    - Run `python .\main.py` to launch `YoBot`.
+    - Run `python .\launch.py` to launch `YoBot`.
     - If you encounter any issues, please refer to the logging information outputted to the console or written to the log file.
 
 5. ### Edit and Add
     - Add modules to the `src/cogs` directory to extend functionality.
-    - Add or edit anything you'd like.
+    - See [Extra Cog Installation](https://github.com/RareMojo/YoBot-Discord-Cogs) for more information on pre-made cogs.
+    - Add or edit anything you'd like to the entire YoBot itself, make it LarryBot!
 <br>
 
 ## Configuration Management
@@ -112,7 +115,7 @@ Change your avatar in `resources/images/avatar.png`. Swap for any 128x128 png/jp
 <br>
 
 ## Further Documentation
-- [All Docs](https://github.com/RareMojo/YoBot-Discord/wiki)
+- [YoBot Wiki](https://github.com/RareMojo/YoBot-Discord/wiki)
 
 <br>
     
@@ -133,4 +136,6 @@ Happy Coding!
 `YoBot` is licensed under the MIT License.
 You are free to use, modify, and distribute `YoBot` as you see fit.
 However, there are certain restrictions on the use of the `YoBot` name, logo, and code.
+I do not own, nor claim to own, the rights to the `Discord` name, logo, or code.
+I do not claim to own the rights to the `Discord.py` library.
 See `LICENSE.md` for details.

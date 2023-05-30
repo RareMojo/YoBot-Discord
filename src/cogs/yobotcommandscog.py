@@ -1,4 +1,9 @@
+from typing import TYPE_CHECKING
+
 from discord.ext import commands
+
+if TYPE_CHECKING:
+  from bot.yobot import YoBot
 
 
 class YoBotCommandsCog(commands.Cog, name="YoBot Discord Commands", description="All available Discord commands."):
@@ -9,7 +14,7 @@ class YoBotCommandsCog(commands.Cog, name="YoBot Discord Commands", description=
     name (str, optional): The name of the cog. Defaults to "Discord Commands".
     description (str, optional): The description of the cog. Defaults to "All available Discord commands.".
   """
-  def __init__(self, yobot):
+  def __init__(self: 'YoBotCommandsCog', yobot: 'YoBot'):
     self.yobot = yobot
 
 
@@ -51,6 +56,6 @@ class YoBotCommandsCog(commands.Cog, name="YoBot Discord Commands", description=
     await ctx.send(f"Argument passed: {argument}")
     
     
-async def setup(yobot: commands.Bot) -> None:
+async def setup(yobot: 'YoBot') -> None:
   """Loads the cog."""
   await yobot.add_cog(YoBotCommandsCog(yobot))

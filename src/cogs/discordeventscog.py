@@ -1,9 +1,16 @@
+from typing import TYPE_CHECKING
+
 import discord.ext.commands as commands
+
 from utils.yobotlib import update_yobot, welcome_to_yobot
+
+if TYPE_CHECKING:
+    from bot.yobot import YoBot
+
 
 class DiscordEventsCog(commands.Cog):
     """Discord events for YoBot to listen to."""
-    def __init__(self, yobot):
+    def __init__(self: 'DiscordEventsCog', yobot: 'YoBot'):
         self.yobot = yobot
 
 
@@ -207,6 +214,6 @@ class DiscordEventsCog(commands.Cog):
         self.yobot.log.info(f'Socket raw send: {payload}')
 
 
-async def setup(yobot: commands.Bot) -> None:
+async def setup(yobot: 'YoBot') -> None:
   """Loads the cog."""
   await yobot.add_cog(DiscordEventsCog(yobot))
