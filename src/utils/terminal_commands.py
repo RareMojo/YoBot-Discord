@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING
 
-from utils.yobotlib import (exit_bot_terminal, ping, set_bot_avatar,
-                            set_bot_name, set_bot_presence, set_owner,
-                            show_help, sync_commands, wipe_config, download_cogs)
+from utils.yobotlib import (download_cogs, exit_bot_terminal, list_cogs, ping,
+                            remove_cogs, set_bot_avatar, set_bot_name,
+                            set_bot_presence, set_owner, show_aliases,
+                            show_help, sync_commands, wipe_config)
 
 if TYPE_CHECKING:
     from bot.yobot import YoBot
@@ -35,38 +36,46 @@ class YoBotTerminalCommands():
         user_command = self.terminal_command.lower()
         self.yobot.log.info('Received command: {}'.format(user_command))
         
-        match user_command:
-            case 'exit':
-                exit_bot_terminal(self.yobot)
-                
-            case 'help':
-                show_help(self.yobot)
-                
-            case 'ping':
-                ping(self.yobot)
-                
-            case 'setbotname':
-                await set_bot_name(self.yobot)
+        if user_command in ['exit', 'quit', 'shutdown']:
+            exit_bot_terminal(self.yobot)
 
-            case 'setbotpresence':
-                await set_bot_presence(self.yobot)
-                
-            case 'setbotavatar':
-                await set_bot_avatar(self.yobot)
-            
-            case 'setowner':
-                await set_owner(self.yobot)
+        elif user_command in ['help', 'h', '?']:
+            show_help(self.yobot)
 
-            case 'reload':
-                await sync_commands(self.yobot)
-                
-            case 'wipebot':
-                wipe_config(self.yobot)
+        elif user_command in ['ping', 'p']:
+            ping(self.yobot)
+
+        elif user_command in ['setbotname', 'setbot', 'sbn']:
+            await set_bot_name(self.yobot)
+
+        elif user_command in ['setbotpresence', 'setbotpres', 'sbp']:
+            await set_bot_presence(self.yobot)
+
+        elif user_command in ['setbotavatar', 'setava', 'sba']:
+            await set_bot_avatar(self.yobot)
+
+        elif user_command in ['setowner', 'setown']:
+            await set_owner(self.yobot)
+
+        elif user_command in ['reload', 'sync', 'r']:
+            await sync_commands(self.yobot)
+
+        elif user_command in ['wipebot', 'wipeconfig', 'wipe', 'wb']:
+            wipe_config(self.yobot)
+
+        elif user_command in ['getcog', 'getcogs', 'gc']:
+            download_cogs(self.yobot, self.yobot.cogs_dir)
+            await self.yobot.load_cogs()
+            await sync_commands(self.yobot)
+
+        elif user_command in ['removecog', 'removecogs', 'rc']:
+            remove_cogs(self.yobot, self.yobot.cogs_dir)
             
-            case 'getcogs':
-                download_cogs(self.yobot, self.yobot.cogs_dir)
-                await self.yobot.load_cogs()
-                await sync_commands(self.yobot)
+        elif user_command in ['listcogs', 'list', 'lc']:
+            list_cogs(self.yobot, self.yobot.cogs_dir)
+        
+        elif user_command in ['alias', 'aliases', 'a']:
+            show_aliases(self.yobot)
             
-            case _:
-                self.yobot.log.warning('Invalid command: {}'.format(user_command))
+        else:
+            print(f"'{user_command}' is not a recognized command.")

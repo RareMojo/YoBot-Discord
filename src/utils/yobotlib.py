@@ -222,20 +222,65 @@ def show_help(yobot: 'YoBot'):
     purple = '\033[35m'
     bold = '\033[1m'
     reset = '\033[0m'
-    yobot.log.info(f"{black}{'-' * 20}[ {purple}{bold}Available commands{reset}{black} ]{'-' * 20}{reset}")
+    commands = {
+        'exit, shutdown': 'Shuts YoBot and the script down.',
+        'help': 'Displays this message.',
+        'ping': 'Pongs.',
+        'setbotname': 'Changes the current YoBot name.',
+        'setbotpresence': 'Changes the current YoBot presence.',
+        'setbotavatar': 'Changes the current YoBot avatar.',
+        'setowner': 'Sets the owner of the bot.',
+        'reload': 'Synchronizes commands with Discord.',
+        'wipebot': 'Wipes the bot\'s configuration files.',
+        'getcog': 'Downloads and loads cogs.',
+        'removecog': 'Removes cogs from the bot.',
+        'listcogs': 'Lists all cogs currently loaded.',
+        'listaliases': 'Lists all command aliases.'
+    }
+    
+    yobot.log.info(f"{black}{'-' * 24}[ {purple}{bold}Available commands{reset}{black} ]{'-' * 24}{reset}")
     yobot.log.info('')
     yobot.log.info(f"{cyan}Simply type the command you want to execute and press enter.{reset}")
     yobot.log.info(f"{cyan}A brief description of the command will be displayed below.{reset}")
     yobot.log.info('')
-    yobot.log.info(f"{green}setbotname{' ' * 12}{black}- Changes the current YoBot name.{reset}")
-    yobot.log.info(f"{green}setavatar{' ' * 13}{black}- Changes the current YoBot avatar.{reset}")
-    yobot.log.info(f"{green}setstatus{' ' * 13}{black}- Changes the current YoBot status.{reset}")
-    yobot.log.info(f"{green}synccommands{' ' * 10}{black}- Synchronizes commands with Discord.{reset}")
-    yobot.log.info(f"{green}exit{' ' * 18}{black}- Shuts YoBot and the script down.{reset}")
-    yobot.log.info(f"{green}ping{' ' * 18}{black}- Pongs.{reset}")
-    yobot.log.info(f"{green}help{' ' * 18}{black}- Displays this message.{reset}")
+    
+    for command, description in commands.items():
+        yobot.log.info(f"{green}{command}{' ' * (30 - len(command))}{black}- {description}{' ' * (45 - len(description))}{reset}")
     yobot.log.info('')
-    yobot.log.info(f"{black}{'-' * 18}[ {purple}{bold}End available commands{reset}{black} ]{'-' * 18}{reset}")
+    yobot.log.info(f"{black}{'-' * 22}[ {purple}{bold}End available commands{reset}{black} ]{'-' * 22}{reset}")
+    
+    
+def show_aliases(yobot: 'YoBot'):
+    """Shows the aliases for YoBot's commands."""
+    black = '\033[30m'
+    green = '\033[32m'
+    purple = '\033[35m'
+    bold = '\033[1m'
+    reset = '\033[0m'
+    aliases = {
+        'exit': ['quit', 'shutdown'],
+        'help': ['h', '?'],
+        'ping': ['p'],
+        'setbotname': ['setbot', 'sbn'],
+        'setbotpresence': ['setbotpres', 'sbp'],
+        'setbotavatar': ['setava', 'sba'],
+        'setowner': ['setown'],
+        'reload': ['sync', 'r'],
+        'wipebot': ['wipeconfig', 'wipe', 'wb'],
+        'getcog': ['getcogs', 'gc'],
+        'removecog': ['removecogs', 'rc'],
+        'listcogs': ['list', 'lc'],
+        'alias': ['aliases', 'a']
+    }
+    
+    yobot.log.info(f"{black}{'-' * 24}[ {purple}{bold}Command Aliases{reset}{black} ]{'-' * 24}{reset}")
+    yobot.log.info('')
+    
+    for command, alias_list in aliases.items():
+        aliases_str = ', '.join(alias_list)
+        yobot.log.info(f"{green}{command}{' ' * (30 - len(command))}{black}- {aliases_str}{' ' * (45 - len(aliases_str))}{reset}")
+    yobot.log.info('')
+    yobot.log.info(f"{black}{'-' * 22}[ {purple}{bold}End command aliases{reset}{black} ]{'-' * 22}{reset}")
     
 
 def wipe_config(yobot: 'YoBot'):
@@ -271,7 +316,7 @@ def github_repo_fetch(owner: str, repo: str, repo_dir: str):
 
 
 def github_repo_pull(yobot: 'YoBot', owner: str, repo: str, repo_dir: str, target_dir: str):
-    """Pulls a YoBot-related repo from GitHub."""
+    """Pulls a repo from GitHub."""
     try:
         files = github_repo_fetch(owner, repo, repo_dir)
 
@@ -301,7 +346,6 @@ def download_cogs(yobot: 'YoBot', cogs_dir: str):
         if get_all_cogs.lower() == 'y':
             yobot.log.info('Downloading all cogs from the repository...')
             github_repo_pull(yobot, "RareMojo", "YoBot-Discord-Cogs", "Cogs", cogs_dir)
-
         else:
             yobot.log.info('Fetching the list of cogs from the repository...')
             files = github_repo_fetch("RareMojo", "YoBot-Discord-Cogs", "Cogs")
@@ -327,11 +371,77 @@ def download_cogs(yobot: 'YoBot', cogs_dir: str):
                         yobot.log.info(f'{cog_name} downloaded.')
                     else:
                         yobot.log.error(f'Error downloading {cog_name}.')
+
+                # List installed cogs after downloading
+                list_cogs(yobot, cogs_dir)
             else:
                 yobot.log.error('Failed to retrieve the list of cogs from the repository.')
 
             if successful:
                 yobot.log.info('Cogs downloaded.')
-
     else:
         yobot.log.info('Cogs not downloaded.')
+
+
+def remove_cogs(yobot: 'YoBot', cogs_dir: str):
+    """Uninstalls Cogs from the terminal. Use at the user's discretion. Has ignore list."""
+    ignored_cogs = ['discordeventscog.py', 'yobotcommandscog.py']  # example ignored cogs
+    remove_cogs = get_boolean_input(yobot, 'Do you want to uninstall cogs? (y/n) ')
+    successful = False
+    
+    if remove_cogs == True:
+        remove_all = get_boolean_input(yobot, 'Do you want to uninstall all cogs at once? (y/n) ')
+        
+        if remove_all == True:
+            confirm_remove_all = get_boolean_input(yobot, 'Are you sure you want to uninstall all cogs? (y/n) ')
+            
+            if confirm_remove_all == True:
+                    yobot.log.info('Uninstalling all cogs...')
+                    
+                    for file in os.listdir(cogs_dir):
+                        if file.endswith('cog.py') and file not in ignored_cogs:
+                            os.remove(f'{cogs_dir}/{file}')
+            else:
+                yobot.log.info('Cogs not uninstalled.')               
+        else:
+            yobot.log.info('Fetching the list of cogs from the cogs directory...')
+            files = [file for file in os.listdir(cogs_dir) if file.endswith('cog.py') and file not in ignored_cogs]
+            
+            for i, file in enumerate(files, start=1):
+                yobot.log.info(f'{i}. {file}')
+
+            selected_cogs = input('Enter the numbers of the cogs you want to uninstall (separated by commas): ')
+            selected_cogs = [int(num.strip()) for num in selected_cogs.split(',')]
+            confirm_removal = get_boolean_input(yobot, 'Are you sure you want to uninstall the selected cogs? (y/n) ')
+            
+            if confirm_removal == True:
+                successful = True
+                yobot.log.info('Uninstalling selected cogs...')
+                
+                for cog_index in selected_cogs:
+                    cog_name = files[cog_index - 1]
+                    os.remove(f'{cogs_dir}/{cog_name}')
+                    yobot.log.info(f'{cog_name} uninstalled.')
+                    
+                if successful == True:
+                    yobot.log.info('Cogs uninstalled.')
+                    
+                # List installed cogs after uninstalling
+                list_cogs(yobot, cogs_dir)
+            else:
+                yobot.log.info('Cogs not uninstalled.')
+                
+                
+def list_cogs(yobot: 'YoBot', cogs_dir: str):
+    """Lists installed cogs from the terminal. Use at the user's discretion."""
+    list_cogs = get_boolean_input(yobot, 'Do you want to list installed cogs? (y/n) ')
+    
+    if list_cogs == True:
+        yobot.log.info('Fetching the list of cogs from the cogs directory...')
+        files = [file for file in os.listdir(cogs_dir) if file.endswith('cog.py')]
+        
+        for i, file in enumerate(files, start=1):
+            yobot.log.info(f'{i}. {file}')
+        yobot.log.info('Installed cogs listed.')
+    else:
+        yobot.log.info('Cogs not listed.')

@@ -127,7 +127,7 @@ async def terminal_command_loop(yobot: 'YoBot'):
     """The main YoBotLogger terminal command loop."""
     loop = asyncio.get_event_loop()
     delay = 0.25 # The amount of time to wait between each loop.
-    launch_delay = 5 # The amount of time to wait for YoBot to finish launching.
+    launch_delay = 3.5 # The amount of time to wait for YoBot to finish launching.
     black = YoBotLoggerFormat.black
     purple = YoBotLoggerFormat.purple
     bold = YoBotLoggerFormat.bold
