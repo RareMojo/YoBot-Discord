@@ -5,7 +5,7 @@ import re
 from logging.handlers import RotatingFileHandler
 from typing import TYPE_CHECKING
 
-from utils.terminal_commands import YoBotTerminalCommands
+from utils.terminalcommands import YoBotTerminalCommands
 
 if TYPE_CHECKING:
     from bot.yobot import YoBot
@@ -21,16 +21,16 @@ class YoBotLogger(logging.Logger):
     Args:
         name (str): The name of the logger.
         log_file (str): The path to the log file.
-        level (int): The logging level.
+        level (str): The logging level.
         maxBytes (int): The maximum number of bytes before the log file is rotated.
         backupCount (int): The number of log files to keep.
     """
-    def __init__(self: 'YoBotLogger', name: str, log_file: str, level: int = logging.INFO, maxBytes: int = 1000000, backupCount: int = 1):
-        super().__init__(name, level)
+    def __init__(self, name: str, log_file: str, level: str = 'INFO', maxBytes: int = 1000000, backupCount: int = 1):
+        super().__init__(name, level.upper()) # Convert level to uppercase string
         """Sets up the YoBotLogger class."""
         self.log_file = log_file
         self.name = name
-        self.level = level
+        self.level = level # type: ignore # Set the logging level.
         self.maxBytes = maxBytes
         self.backupCount = backupCount
         self.setup_logger()
@@ -96,7 +96,7 @@ class YoBotLoggerRotator(RotatingFileHandler):
         backupCount (int): The number of log files to keep.
         encoding (str): The encoding to use.
     """
-    def __init__(self: 'YoBotLoggerRotator', log_file: str, mode='a', maxBytes=0, backupCount=0, encoding=None):
+    def __init__(self, log_file: str, mode='a', maxBytes=0, backupCount=0, encoding=None):
         """Handles file swap before beginning to write to the log file."""
         self.log_file = log_file
         

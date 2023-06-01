@@ -1,52 +1,82 @@
 import asyncio
-import json
 import os
 from typing import TYPE_CHECKING
 
 from discord.ext import commands
 
 from utils.logger import terminal_command_loop
+from utils.yobotlib import load_config
 
 if TYPE_CHECKING:
     from discord import Intents
 
     from utils.logger import YoBotLogger
+    
+
+#                       __                 __
+#                      /\ \               /\ \__
+#    __  __      ___   \ \ \____    ___   \ \ ,_\
+#   /\ \/\ \    / __`\  \ \ '__`\  / __`\  \ \ \/
+#   \ \ \_\ \  /\ \L\ \  \ \ \L\ \/\ \L\ \  \ \ \_
+#    \/`____ \ \ \____/   \ \_,__/\ \____/   \ \__\
+#     `/___/> \ \/___/     \/___/  \/___/     \/__/
+#        /\___/
+#        \/__/                 by  R A R E M O J O
 
 
 class YoBot(commands.Bot):
-    """Main YoBot class that handles the bot's initialization and startup."""
-    def __init__(self: 'YoBot', intents: 'Intents', config_file: str, avatar: str, cogs_dir: str, logger: 'YoBotLogger'):
+    """Main YoBot class that handles the bot's initialization and startup.
+    
+    Attributes:
+        config (dict): The bot's config file.
+        config_file (str): The path to the config file.
+        avatar_file (str): The path to the avatar file.
+        cogs_dir (str): The path to the cogs directory.
+        cogs_keys_dir (str): The path to the cogs keys directory.
+        bot_name (str): The bot's name.
+        presence (str): The bot's presence.
+        owner_name (str): The bot owner's name.
+        owner_id (str): The bot owner's ID.
+        log_file (str): The path to the log file.
+        log (YoBotLogger): The bot's logger.
+    """
+    def __init__(self, intents: 'Intents', config_file: str, logger: 'YoBotLogger'):
+        self.config_file = config_file
+        self.config = load_config(config_file) # Ensure this is loaded first.
+        self.log_file = self.config['file_paths']['log_file']
+        self.log = logger
+        self.log.debug('YoBot built.') 
         
-        with open(config_file, 'r') as f: # Ensure that the config file loads before the bot fully starts.
-            self.config = json.load(f)
-            
         super().__init__(command_prefix=self.config['prefix'], intents=intents)
         """Initializes the bot."""
+        self.log.debug('YoBot initialized.')  
         self.running = True
-        self.config_file = config_file
-        self.avatar = avatar
-        self.cogs_dir = cogs_dir
+        self.cogs_dir = self.config['file_paths']['cogs_dir']
+        self.cogs_keys_dir = self.config['file_paths']['cogs_key_file']
+        self.cogs_sigs_dir = self.config['file_paths']['cogs_sigs_dir']
+        self.cogs_verify_blacklist = self.config['blacklist']['cog_verify']
+        self.cogs_removal_blacklist = self.config['blacklist']['cog_removal']
+        self.avatar_file = self.config['file_paths']['avatar_file']
         self.bot_name = self.config['bot_name']
         self.presence = self.config['presence']
         self.owner_name = self.config['owner_name']
         self.owner_id = self.config['owner_id']
-        self.log = logger
 
 
     async def start_bot(self):
         """Starts YoBot."""
-        await self.load_cogs()
-        yobot_task = asyncio.create_task(self.start(self.config['discord_token']))
-        command_task = asyncio.create_task(terminal_command_loop(self))
         self.log.info('YoBot starting...')
+        await self.load_cogs()
+        yobot_task = asyncio.create_task(self.start(self.config['discord_token'])) # This is for the bot itself.
+        command_task = asyncio.create_task(terminal_command_loop(self)) # This is for the terminal commands.
         try:
             while self.running:
-                await asyncio.sleep(0)
+                await asyncio.sleep(0) # This is to allow the bot to run in the background.
         except Exception as e:
             self.log.error(f"Bot encountered an error: {e}")
         finally:
-            yobot_task.cancel()
-            command_task.cancel()
+            yobot_task.cancel() # Cancels the bot task.
+            command_task.cancel() # Cancels the command task.
 
 
     def stop_bot(self):
@@ -57,7 +87,7 @@ class YoBot(commands.Bot):
         
     async def load_cogs(self):
         """Loads all cogs in the cogs directory."""
-        self.log.info("Loading extensions...")
+        self.log.debug("Loading cogs...")
         loaded_extensions = 0
         cog_name = None
         try:
@@ -65,15 +95,10 @@ class YoBot(commands.Bot):
                 if filename.endswith('cog.py'):
                     cog_name = f'cogs.{filename[:-3]}'
                     await self.load_extension(cog_name)
-                    self.log.info(f'Detected {filename[:-3]}')
+                    self.log.debug(f'Detected - [ {filename[:-3]} ]')
                     loaded_extensions += 1
         except Exception as e:
-            self.log.error(f'Failed to load extension {cog_name}.')
+            self.log.error(f'Failed to load cogs {cog_name}.')
             self.log.error(f'Error: {e}')
                 
-        self.log.info('Loaded extensions.')
-
-
-
-    def __call__(self, *args, **kwargs) -> 'YoBot':
-        return self
+        self.log.debug('Loaded cogs.')
