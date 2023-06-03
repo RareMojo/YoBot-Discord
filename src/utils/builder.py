@@ -23,6 +23,7 @@ class YoBotBuilder(YoBot):
         self.cogs_dir = self.config['file_paths']['cogs_dir']
         self.cogs_key_file = self.config['file_paths']['cogs_key_file']
         self.cogs_sigs_dir = self.config['file_paths']['cogs_sigs_dir']
+        self.repo_info = self.config['repo_info']
         self.log = YoBotLogger(name='YoBot', log_file=self.log_file, level=self.config['log_level'], maxBytes=1000000, backupCount=1) # Setup the logger.   
 
 
@@ -46,7 +47,7 @@ class YoBotBuilder(YoBot):
                 if config['update_bot']:
                     self.log.debug('Trying to build cogs')
                     self.log.info('Running first time Cog installation...')
-                    download_cogs(self, self.cogs_dir, self.cogs_sigs_dir) 
+                    download_cogs(self, self.cogs_dir, self.cogs_sigs_dir, self.repo_info) 
                     self.log.info('Cog installation complete.')
         except FileNotFoundError as e:
             self.log.error(f'Error setting up YoBot cogs: {e}')

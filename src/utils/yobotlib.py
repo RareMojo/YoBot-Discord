@@ -32,7 +32,7 @@ def show_help(yobot: 'YoBot') -> None:
     bold = '\033[1m'
     reset = '\033[0m'
     commands = {
-        'exit, shutdown': 'Shuts YoBot and the script down.',
+        'exit': 'Shuts YoBot and the script down.',
         'help': 'Displays this message.',
         'ping': 'Pongs.',
         'setbotname': 'Changes the current YoBot name.',
@@ -44,7 +44,12 @@ def show_help(yobot: 'YoBot') -> None:
         'getcog': 'Downloads and loads cogs.',
         'removecog': 'Removes cogs from the bot.',
         'listcogs': 'Lists all cogs currently loaded.',
-        'listaliases': 'Lists all command aliases.'
+        'verifycogs': 'Verifies the integrity of cogs.',
+        'aliases': 'Lists all command aliases.',
+        'debug': 'Toggles debug mode.',
+        'devmode': 'Toggles developer mode.',
+        'addblacklist': 'Adds a cog to the blacklist.',
+        'removeblacklist': 'Removes a cog from the blacklist.',
     }
     
     try:
@@ -90,7 +95,12 @@ def show_aliases(yobot: 'YoBot') -> None:
         'getcog': ['getcogs', 'gc'],
         'removecog': ['removecogs', 'rc'],
         'listcogs': ['list', 'lc'],
-        'alias': ['aliases', 'a']
+        'alias': ['aliases', 'a'],
+        'debug': ['d'],
+        'developer': ['dev', 'devmode', 'dm'],
+        'verifycogs': ['verify', 'vc'],
+        'addblacklist': ['addbl', 'abl'],
+        'removeblacklist': ['rmblist', 'rmbl'],
     }
     
     try:
@@ -130,8 +140,8 @@ async def update_yobot(yobot: 'YoBot') -> None:
         try: # Try to update the bot's name, presence, and avatar on the Discord servers.
             with open(yobot.avatar_file, 'rb') as f:
                 new_avatar = f.read() 
-                await yobot.user.edit(avatar=new_avatar) # type: ignore
-            await yobot.user.edit(username=yobot.config['bot_name']) # type: ignore
+                await yobot.user.edit(avatar=new_avatar)
+            await yobot.user.edit(username=yobot.config['bot_name'])
             await yobot.change_presence(activity=discord.Game(name=yobot.presence))
         except Exception as e:
             yobot.log.error('Error: {}'.format(e))
@@ -207,12 +217,11 @@ async def set_bot_name(yobot: 'YoBot') -> None:
         yobot.log.debug('Setting bot name...')
         yobot.log.info(f'Current name: {yobot.config["bot_name"]}')
         change_bot_name = get_boolean_input(yobot, 'Do you want to change YoBots name? (y/n) ')
-        config = yobot.config
 
         if change_bot_name == True:
             new_name = input('Enter new bot name: ')
             try:
-                await yobot.user.edit(username=new_name) # type: ignore
+                await yobot.user.edit(username=new_name)
                 yobot.log.info('Config change, bot_name: {} -> {}'.format(yobot.config['bot_name'], new_name))
                 update_config(yobot.config_file, {"bot_name": new_name, "update_bot": True})
             except Exception as e:
@@ -239,14 +248,13 @@ async def set_bot_avatar(yobot: 'YoBot') -> None:
         yobot.log.info('This sets the avatar to the image at ../resources/images/avatar.png')
         change_avatar = get_boolean_input(yobot, 'Do you want to change the avatar? (y/n) ')
         successful = True
-        config = yobot.config
-
+        
         with open(yobot.avatar_file, 'rb') as f:
             new_avatar = f.read()
 
         if change_avatar == True:
             try:
-                await yobot.user.edit(avatar=new_avatar) # type: ignore
+                await yobot.user.edit(avatar=new_avatar)
             except Exception as e:
                 yobot.log.error('Error: {}'.format(e))
                 yobot.log.warning('Avatar not changed on Discord servers.')
@@ -458,14 +466,12 @@ def github_repo_pull(yobot: 'YoBot', owner: str, repo: str, repo_dir: str, targe
                     yobot.log.info(f'{file} downloaded.')
                 else:
                     yobot.log.error(f'Error downloading {file}. Status code: {response.status_code}')
-        else:
-            yobot.log.error('Failed to retrieve the list of files from the repository.')
     except Exception as e:
         yobot.log.error(f'Error downloading files: {e}')
         yobot.log.debug(f'Error details: {traceback.format_exc()}')
 
 
-def download_cogs(yobot: 'YoBot', cogs_dir: str, sigs_dir: str) -> None:
+def download_cogs(yobot: 'YoBot', cogs_dir: str, sigs_dir: str, repo_info: dict) -> None:
     """
     Downloads cogs from the terminal. Use for setup or at the user's discretion.
     
@@ -484,8 +490,8 @@ def download_cogs(yobot: 'YoBot', cogs_dir: str, sigs_dir: str) -> None:
 
             if get_all_cogs == True:
                 yobot.log.info('Downloading all cogs from the repository...')
-                github_repo_pull(yobot, "RareMojo", "YoBot-Discord-Cogs", "Cogs", cogs_dir)
-                github_repo_pull(yobot, "RareMojo", "YoBot-Discord-Cogs", "Sigs", sigs_dir)
+                github_repo_pull(yobot, repo_info['repo_owner'], repo_info['repo_name'], repo_info['repo_cogs'], cogs_dir)
+                github_repo_pull(yobot, repo_info['repo_owner'], repo_info['repo_name'], repo_info['repo_sigs'], sigs_dir)
             else:
                 yobot.log.info('Fetching the list of cogs from the repository...')
                 files = github_repo_fetch(yobot, "RareMojo", "YoBot-Discord-Cogs", "Cogs")
@@ -521,10 +527,6 @@ def download_cogs(yobot: 'YoBot', cogs_dir: str, sigs_dir: str) -> None:
                             yobot.log.debug(f'{cog_name}.sig downloaded.')
                         else:
                             yobot.log.error(f'Error downloading {cog_name}.sig.')
-                            
-                    list_cogs(yobot, cogs_dir)
-                else:
-                    yobot.log.error('Failed to retrieve the list of cogs from the repository.')
 
                 if successful:
                     yobot.log.debug('Cogs downloaded.')
@@ -711,9 +713,6 @@ def verify_cog_signature(yobot: 'YoBot', cog_file: str, signature_file: str, pub
         yobot.log.debug(f"YoBot attempted to verify the signature of '{cog_file}' but encountered an error: {str(e)}")
         return False
     
-
-import traceback
-
 
 def verify_all_cogs(yobot: 'YoBot', cogs_dir: str, public_key_file: str, cog_blacklist: list[str] = []) -> bool:
     """

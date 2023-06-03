@@ -22,7 +22,6 @@ class YoBotTerminalCommands():
     def __init__(self: 'YoBotTerminalCommands', yobot: 'YoBot', terminal_command: str):
         self.yobot = yobot
         self.terminal_command = terminal_command
-        
 
     async def handle_terminal_command(self):
         """
@@ -75,7 +74,7 @@ class YoBotTerminalCommands():
 
         elif user_command in ['getcog', 'getcogs', 'gc']:
             self.yobot.log.debug('Downloading cogs...')
-            download_cogs(self.yobot, self.yobot.cogs_dir, self.yobot.cogs_sigs_dir)
+            download_cogs(self.yobot, self.yobot.cogs_dir, self.yobot.cogs_sigs_dir, self.yobot.config['repo_info'])
             await self.yobot.load_cogs()
             await sync_commands(self.yobot)
 

@@ -39,6 +39,10 @@ class YoBot(commands.Bot):
         owner_id (str): The bot owner's ID.
         log_file (str): The path to the log file.
         log (YoBotLogger): The bot's logger.
+        repo_info (str): The bot's repo info.
+        cog_verify_blacklist (list): The cog verification blacklist.
+        cog_removal_blacklist (list): The cog removal blacklist.
+        running (bool): Whether the bot is running.
     """
     def __init__(self, intents: 'Intents', config_file: str, logger: 'YoBotLogger'):
         self.config_file = config_file
@@ -61,6 +65,7 @@ class YoBot(commands.Bot):
         self.presence = self.config['presence']
         self.owner_name = self.config['owner_name']
         self.owner_id = self.config['owner_id']
+        self.repo_info = self.config['repo_info']
 
 
     async def start_bot(self):
@@ -94,11 +99,14 @@ class YoBot(commands.Bot):
             for filename in os.listdir(self.cogs_dir):
                 if filename.endswith('cog.py'):
                     cog_name = f'cogs.{filename[:-3]}'
+                    if cog_name in self.extensions:
+                        self.log.debug(f'Skipping - [ {filename[:-3]} ] (already loaded)')
+                        continue
                     await self.load_extension(cog_name)
-                    self.log.debug(f'Detected - [ {filename[:-3]} ]')
+                    self.log.debug(f'Loaded - [ {filename[:-3]} ]')
                     loaded_extensions += 1
         except Exception as e:
             self.log.error(f'Failed to load cogs {cog_name}.')
             self.log.error(f'Error: {e}')
                 
-        self.log.debug('Loaded cogs.')
+        self.log.debug(f'Loaded {loaded_extensions} cogs.')

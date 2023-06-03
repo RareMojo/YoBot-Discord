@@ -69,6 +69,7 @@ class YoBotLoggerFormat(logging.Formatter):
         logging.ERROR: red + bold,
         logging.CRITICAL: red + bold,
     }
+    
 
     def format(self: 'YoBotLoggerFormat', record: logging.LogRecord):
         """Formats the log message."""
