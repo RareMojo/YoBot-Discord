@@ -1,17 +1,35 @@
-# YoBot-Discord
+<br/>
+<p align="center">
+
+  <img align="center" width="250" height="250" src="https://i.imgur.com/yPfALyd.png">
+
+  <h3 align="center">YoBot</h3>
+
+  <p align="center">
+    Customization Made Simple, YoBot, yo style!
+    <br/>
+    <br/>
+    <a href="https://github.com/RareMojo/YoBot-Discord/wiki"><strong>Explore the docs »</strong></a>
+    <br/>
+  </p>
+</p>
+ 
 <br>
 
-The YoBot project is a basic, structured, and customizable bot framework implemented in [Discord.py](https://discordpy.readthedocs.io/en/stable/api.html) 2.0+. 
+## Table Of Contents
 
-It comes prepared with a localized terminal, extension loading, examples, and other essentials.
-
-The structure of the project and functionalities of each module are described below.
+- Guides
+    - [Installation](https://github.com/RareMojo/YoBot-Discord/wiki/Installation)
+    - [Configuration](https://github.com/RareMojo/YoBot-Discord/wiki/Configuration)
+    - [File Structure](https://github.com/RareMojo/YoBot-Discord/wiki/Filestructure)
+    - [Extra Cog Installation](https://github.com/RareMojo/YoBot-Discord-Cogs)
+    - [Cog Creation](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html)
 
 <br>
 
 ## Features
 ### Accessibility
-YoBot is meant to be deployed by anyone without any knowledge of Python or Discord.py, or programming.
+YoBot is meant to be deployed without any knowledge of Python or Discord.py, or programming.
 
 The base bot has some basic functionality and can be used as is.
 
@@ -23,17 +41,6 @@ Creating a Cog extension is a great way to learn Python and Discord.py without h
 
 <br>
 
-### Extensions
-Extensions are intended for additional modular features to extend the functionality of YoBot.
-
-These are called [Cogs](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html) and can be a number of things.
-
-Each [Cog](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html) is expected to be a separate Python script implementing a particular feature or set of features.
-
-This can be something as simple as custom Discord commands to tracking every Elon Musk tweet in your private server.
-
-<br>
-    
 ### OS Compatibility
 YoBot is designed to function on both Windows and Linux out of the box.
 
@@ -41,50 +48,57 @@ There are no plans to make support for any other platforms at this time.
 
 <br>
 
-### Logging
-YoBot uses a custom logging module to handle the terminal log and log files.
+### Logging & Terminal Commands
+YoBot uses a custom logging module to handle the terminal log, log files, and terminal commands.
 
-This should allow some flexibility for these built in features for other developers.
-
-<br>
-
-### Terminal Command Handling
-YoBot can handle commands entered directly from the terminal for more control.
-
-This means YoBot can be used as a standalone application without Discord as well.
-
-These commands allow for great customizability and control without digging through config files at all.
+These commands allow for great customizability and control without digging through a bunch of files and code.
 
 You can easily create new commands for the terminal and it is another great way to learn Python without having to worry about the rest of the bot.
 
 Start creating them in `terminalcommands.py` within class `YobotTerminalCommands()` by calling/creating functions in `yobotlib.py`.
 
-> :warning: *please follow security guidelines*
+<br>
+
+> :warning: *Please follow security guidelines!*
 
 <br>
 
-## Usage
+### Extensions
+Extensions are intended for additional modular features to extend the functionality of YoBot.
 
+These are usally called Cogs and can be a number of things. Learn more about Cogs [here.](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html)
+
+Each [Cog](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html) is expected to be a separate Python script implementing a particular feature or set of features.
+
+<br>
+    
+## Usage
 For complete usage please see the [YobotWiki](https://github.com/RareMojo/YoBot-Discord/wiki).
 
+<br>
 
 ### Installation
-
-Installation is simple and only requires a few steps.
+The only prerequisites are a Discord App, Python, Git, and requirements.txt.
 
 See the install guide [here](https://github.com/RareMojo/YoBot-Discord/wiki/Installation)
 
 ---
 
 ### Configuration
-
-Configuration is simple and only requires a few steps.
-
-It is done automatically at launch and requires user input for a few required fields.
+This is done automatically at launch and requires user input for a few details.
 
 You can also edit the config file directly or using various terminal commands.
 
 See more information [here](https://github.com/RareMojo/YoBot-Discord/wiki/Configuration)
+
+---
+
+### Getting Cogs
+To install pre-made Cogs, you can use the terminal command `getcog`.
+
+You can also review Cogs or manually install them from [here](https://github.com/RareMojo/YoBot-Discord-Cogs).
+
+As always, you can try to make your own Cogs without touching any of the source code.
 
 <br>
 
@@ -93,11 +107,7 @@ Thank you for being interested in the YoBot-Discord project!
 
 We're dedicated to creating a bot that's easy to customize and use, both for programmers and regular users.
 
-I hope the information I shared about YoBot gave you a good understanding of how it works.
-
 If you have any questions, suggestions, or need more information, feel free to get in touch. 
-
-Your input is valuable and helps us improve YoBot.
 
 Thanks again for your time and happy coding!
 
@@ -105,4 +115,4 @@ Thanks again for your time and happy coding!
 
 ## License
 YoBot is completely open source, licensed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) license.
-See LICENSE.md for more information.
+See [LICENSE.md](https://github.com/RareMojo/YoBot-Discord/blob/main/LICENSE.md) for more information.

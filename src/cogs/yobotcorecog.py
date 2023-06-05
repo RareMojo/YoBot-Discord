@@ -10,42 +10,42 @@ if TYPE_CHECKING:
 
 class YoBotCoreCog(commands.Cog, name='YoBot Core', description='Core Discord event functionality for YoBot.'):
     """Discord events for YoBot to listen to.
-    
+
     Attributes:
         yobot (YoBot): The YoBot instance.
     """
+
     def __init__(self: 'YoBotCoreCog', yobot: 'YoBot'):
         self.yobot = yobot
-
 
     @commands.Cog.listener()
     async def on_connect(self):
         """Called when YoBot connects to Discord."""
         try:
-            await update_yobot(self.yobot) # Update YoBot's status and activity, if applicable.
+            # Update YoBot's status and activity, if applicable.
+            await update_yobot(self.yobot)
             self.yobot.log.debug('YoBot connected to Discord.')
         except Exception as e:
             self.yobot.log.error(f'Error updating YoBot: {e}')
-
 
     @commands.Cog.listener()
     async def on_ready(self):
         """Called when YoBot is ready and connected to Discord."""
         try:
-            await welcome_to_yobot(self.yobot) # Send a welcome message to the console.
+            # Send a welcome message to the console.
+            await welcome_to_yobot(self.yobot)
             self.yobot.log.debug('YoBot is ready and connected to Discord.')
         except Exception as e:
             self.yobot.log.error(f'Error welcoming YoBot: {e}')
-
 
     @commands.Cog.listener()
     async def on_message(self, message):
         """Called when a message is received."""
         try:
-            if message.author == self.yobot.user: # Ignore messages from the bot itself
+            if message.author == self.yobot.user:  # Ignore messages from the bot itself
                 return
-            
-            #log(f'Message by {message.author} in {message.channel}: {message.content}') ## This is very spammy, so it's commented out by default.
+
+            # log(f'Message by {message.author} in {message.channel}: {message.content}') ## This is very spammy, so it's commented out by default.
 
             # Example of a message handler
             if message.content.startswith('hello'):

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class YoBotLogger(logging.Logger):
     """
     Sets up the YoBotLogger class.
-    
+
     This class inherits from the logging.Logger class.
     It provides a custom logging format, file rotation, and terminal input/output.
 
@@ -25,30 +25,33 @@ class YoBotLogger(logging.Logger):
         maxBytes (int): The maximum number of bytes before the log file is rotated.
         backupCount (int): The number of log files to keep.
     """
+
     def __init__(self, name: str, log_file: str, level: str = 'INFO', maxBytes: int = 1000000, backupCount: int = 1):
-        super().__init__(name, level.upper()) # Convert level to uppercase string
+        super().__init__(name, level.upper())  # Convert level to uppercase string
         """Sets up the YoBotLogger class."""
         self.log_file = log_file
         self.name = name
-        self.level = level # type: ignore # Set the logging level.
+        self.level = level  # type: ignore # Set the logging level.
         self.maxBytes = maxBytes
         self.backupCount = backupCount
         self.setup_logger()
-    
+
     def setup_logger(self):
         """Sets up the logger."""
-        file_handler = YoBotLoggerRotator(log_file=self.log_file, maxBytes=self.maxBytes, backupCount=self.backupCount) # Setup the file rotater.
-        file_handler.setFormatter(YoBotLoggerFormat()) # Setup the file formatter.
+        file_handler = YoBotLoggerRotator(
+            log_file=self.log_file, maxBytes=self.maxBytes, backupCount=self.backupCount)  # Setup the file rotater.
+        # Setup the file formatter.
+        file_handler.setFormatter(YoBotLoggerFormat())
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(YoBotLoggerFormat())
-        
-        self.setLevel(self.level) # Set the logging level.
+
+        self.setLevel(self.level)  # Set the logging level.
         file_handler.setLevel(self.level)
         console_handler.setLevel(self.level)
 
-        self.addHandler(file_handler) # Add the handlers.
+        self.addHandler(file_handler)  # Add the handlers.
         self.addHandler(console_handler)
-        
+
 
 class YoBotLoggerFormat(logging.Formatter):
     """Provides a custom logging format."""
@@ -69,7 +72,6 @@ class YoBotLoggerFormat(logging.Formatter):
         logging.ERROR: red + bold,
         logging.CRITICAL: red + bold,
     }
-    
 
     def format(self: 'YoBotLoggerFormat', record: logging.LogRecord):
         """Formats the log message."""
@@ -87,9 +89,9 @@ class YoBotLoggerFormat(logging.Formatter):
 class YoBotLoggerRotator(RotatingFileHandler):
     """
     Provides a custom log file handler. 
-    
+
     This class is used to swap the log file with a new one when YoBot is launched.
-    
+
     Args:
         log_file (str): The path to the log file.
         mode (str): The file mode.
@@ -97,15 +99,18 @@ class YoBotLoggerRotator(RotatingFileHandler):
         backupCount (int): The number of log files to keep.
         encoding (str): The encoding to use.
     """
+
     def __init__(self, log_file: str, mode='a', maxBytes=0, backupCount=0, encoding=None):
         """Handles file swap before beginning to write to the log file."""
         self.log_file = log_file
-        
+
         if os.path.isfile(self.log_file):
             if os.path.isfile(os.path.join(os.path.dirname(self.log_file), 'old.log')):
-                os.remove(os.path.join(os.path.dirname(self.log_file), 'old.log'))
-            os.rename(self.log_file, os.path.join(os.path.dirname(self.log_file), 'old.log'))
-            
+                os.remove(os.path.join(
+                    os.path.dirname(self.log_file), 'old.log'))
+            os.rename(self.log_file, os.path.join(
+                os.path.dirname(self.log_file), 'old.log'))
+
         super().__init__(log_file, mode, maxBytes, backupCount, encoding)
         """Sets up the YoBotLoggerRotator class."""
         self.mode = mode
@@ -127,20 +132,25 @@ class YoBotLoggerRotator(RotatingFileHandler):
 async def terminal_command_loop(yobot: 'YoBot'):
     """The main YoBotLogger terminal command loop."""
     loop = asyncio.get_event_loop()
-    delay = 0.25 # The amount of time to wait between each loop.
-    launch_delay = 3.5 # The amount of time to wait for YoBot to finish launching.
+    delay = 0.25  # The amount of time to wait between each loop.
+    # The amount of time to wait for YoBot to finish launching.
+    launch_delay = 3.5
     black = YoBotLoggerFormat.black
     purple = YoBotLoggerFormat.purple
     bold = YoBotLoggerFormat.bold
     reset = YoBotLoggerFormat.reset
-    
+
     if yobot.running:
-        await asyncio.sleep(launch_delay) # Wait for YoBot to finish launching.
-        
+        # Wait for YoBot to finish launching.
+        await asyncio.sleep(launch_delay)
+
     while yobot.running:
-        await asyncio.sleep(delay) # Prevents the terminal from using too much CPU.
+        # Prevents the terminal from using too much CPU.
+        await asyncio.sleep(delay)
         terminal_format = f'{black}{bold}[{purple}YoBot{reset}{black}{bold}]{reset} {yobot.owner_name}{bold}{black}@{reset}{yobot.config["bot_name"]}{reset}'
         terminal_prompt = f'{terminal_format}{black}{bold}: > {reset}'
-        terminal_command = loop.run_in_executor(None, input, terminal_prompt) # Get the terminal command.
-        command_handler = YoBotTerminalCommands(yobot, await terminal_command) # Handle the terminal command.
+        # Get the terminal command.
+        terminal_command = loop.run_in_executor(None, input, terminal_prompt)
+        # Handle the terminal command.
+        command_handler = YoBotTerminalCommands(yobot, await terminal_command)
         await command_handler.handle_terminal_command()

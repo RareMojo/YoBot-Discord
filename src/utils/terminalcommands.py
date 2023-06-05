@@ -8,8 +8,8 @@ from utils.yobotlib import (add_blacklist, download_cogs, exit_bot_terminal,
 
 if TYPE_CHECKING:
     from bot.yobot import YoBot
-    
-    
+
+
 class YoBotTerminalCommands():
     """
     This class handles YoBotLogger terminal commands.
@@ -19,6 +19,7 @@ class YoBotTerminalCommands():
         yobot (Yobot): The Yobot instance.
         terminal_command (str): The terminal command.
     """
+
     def __init__(self: 'YoBotTerminalCommands', yobot: 'YoBot', terminal_command: str):
         self.yobot = yobot
         self.terminal_command = terminal_command
@@ -26,16 +27,16 @@ class YoBotTerminalCommands():
     async def handle_terminal_command(self):
         """
         Handles the terminal command.
-        
+
         Do not call these from outside sources.
-        
+
         Terminal -> External Application == GOOD!
 
         External Application -> Terminal == BAD!
         """
         user_command = self.terminal_command.lower()
         self.yobot.log.info('Received command: {}'.format(user_command))
-        
+
         if user_command in ['exit', 'quit', 'shutdown']:
             self.yobot.log.debug('Exiting bot terminal...')
             exit_bot_terminal(self.yobot)
@@ -74,34 +75,36 @@ class YoBotTerminalCommands():
 
         elif user_command in ['getcog', 'getcogs', 'gc']:
             self.yobot.log.debug('Downloading cogs...')
-            download_cogs(self.yobot, self.yobot.cogs_dir, self.yobot.cogs_sigs_dir, self.yobot.config['repo_info'])
+            download_cogs(self.yobot, self.yobot.cogs_dir,
+                          self.yobot.cogs_sigs_dir, self.yobot.config['repo_info'])
             await self.yobot.load_cogs()
             await sync_commands(self.yobot)
 
         elif user_command in ['removecog', 'removecogs', 'rc']:
             self.yobot.log.debug('Removing cogs...')
             remove_cogs(self.yobot, self.yobot.cogs_dir)
-            
+
         elif user_command in ['listcogs', 'list', 'lc']:
             self.yobot.log.debug('Listing cogs...')
             list_cogs(self.yobot, self.yobot.cogs_dir)
-            
+
         elif user_command in ['verifycogs', 'verify', 'vc']:
             self.yobot.log.debug('Verifying cogs...')
-            verify_all_cogs(self.yobot, self.yobot.cogs_dir, self.yobot.cogs_keys_dir, self.yobot.cogs_verify_blacklist)
-        
+            verify_all_cogs(self.yobot, self.yobot.cogs_dir,
+                            self.yobot.cogs_keys_dir, self.yobot.cogs_verify_blacklist)
+
         elif user_command in ['alias', 'aliases', 'a']:
             self.yobot.log.debug('Showing aliases...')
             show_aliases(self.yobot)
-            
+
         elif user_command in ['debug', 'd']:
             self.yobot.log.debug('Toggling debug mode...')
             toggle_debug_mode(self.yobot)
-            
+
         elif user_command in ['developer', 'dev', 'devmode', 'dm']:
             self.yobot.log.debug('Toggling developer mode...')
             toggle_dev_mode(self.yobot)
-            
+
         elif user_command in ['addblacklist', 'addbl', 'abl']:
             self.yobot.log.debug('Adding to blacklist...')
             add_blacklist(self.yobot)
@@ -111,4 +114,5 @@ class YoBotTerminalCommands():
             remove_blacklist(self.yobot)
 
         else:
-            self.yobot.log.info(f"'{user_command}' is not a recognized command.")
+            self.yobot.log.info(
+                f"'{user_command}' is not a recognized command.")
