@@ -16,14 +16,13 @@
  
 <br>
 
-## Table Of Contents
+## Guides
 
-- Guides
-    - [Installation](https://github.com/RareMojo/YoBot-Discord/wiki/Installation)
-    - [Configuration](https://github.com/RareMojo/YoBot-Discord/wiki/Configuration)
-    - [File Structure](https://github.com/RareMojo/YoBot-Discord/wiki/Filestructure)
-    - [Extra Cog Installation](https://github.com/RareMojo/YoBot-Discord-Cogs)
-    - [Cog Creation](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html)
+  - [Installation](https://github.com/RareMojo/YoBot-Discord/wiki/Installation)
+  - [Configuration](https://github.com/RareMojo/YoBot-Discord/wiki/Configuration)
+  - [File Structure](https://github.com/RareMojo/YoBot-Discord/wiki/Filestructure)
+  - [Extra Cog Installation](https://github.com/RareMojo/YoBot-Discord-Cogs)
+  - [Cog Creation](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html)
 
 <br>
 

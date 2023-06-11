@@ -1,10 +1,9 @@
 import asyncio
 import os
 
-from utils.builder import YoBotBuilder
-
 import yaml
 
+from utils.builder import Builder
 
 #                       __                 __
 #                      /\ \               /\ \__
@@ -17,7 +16,7 @@ import yaml
 #        \/__/                 by  R A R E M O J O
 #
 #
-# YoBot-Discord - A modular Discord bot written in Python.
+# YoBot-Discord - A basic Discord bot written in Python.
 # Copyright (C) 2023  Nicolas 'RareMojo' Rejcek
 #
 # This program is free software: you can redistribute it and/or modify
@@ -48,21 +47,17 @@ def launch_bot():
 
     This is meant to be the main entry point for the bot.
     """
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(
-        __file__)))  # The root of the project file is considered <../YoBot-Discord>.
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # The root of the project file is considered <../YoBot-Discord>.
     config_dir = f'{root_dir}/configs'
     config_file = f'{root_dir}/configs/config.yaml'
     log_dir = f'{root_dir}/logs'
     log_file = f'{root_dir}/logs/latest.log'
     avatar_file = f'{root_dir}/resources/images/avatar.png'
     cogs_dir = f'{root_dir}/src/cogs'
-    cogs_sigs_dir = f'{root_dir}/src/cogs/sigs'
-    cogs_key_file = f'{root_dir}/src/cogs/sigs/cogs_key_public.pem'
     resources_dir = f'{root_dir}/resources'
     images_dir = f'{root_dir}/resources/images'
     sounds_dir = f'{root_dir}/resources/sounds'
     texts_dir = f'{root_dir}/resources/texts'
-
     try:
         try:
             print('Checking for directories...')
@@ -80,11 +75,6 @@ def launch_bot():
             if not os.path.isdir(cogs_dir):
                 os.mkdir(cogs_dir)
                 print('Cogs directory not found. Creating cogs directory...')
-
-            if not os.path.isdir(cogs_sigs_dir):
-                os.mkdir(cogs_sigs_dir)
-                print(
-                    'Cogs signatures directory not found. Creating cogs signatures directory...')
         except Exception as e:
             print(f'Error creating directories: {e}')
 
@@ -100,8 +90,6 @@ def launch_bot():
                 "log_file": log_file,
                 "avatar_file": avatar_file,
                 "cogs_dir": cogs_dir,
-                "cogs_sigs_dir": cogs_sigs_dir,
-                "cogs_key_file": cogs_key_file,
                 "resources_dir": resources_dir,
                 "images_dir": images_dir,
                 "sounds_dir": sounds_dir,
@@ -126,7 +114,6 @@ def launch_bot():
                 },
                 "blacklist": {
                     "cog_removal": ["yobotcorecog.py", "yobotcommandcog.py"],
-                    "cog_verify": ["yobotcorecog.py", "yobotcommandcog.py"]
                 }
             }
 
@@ -138,11 +125,10 @@ def launch_bot():
     except Exception as e:
         print(f'Error setting up YoBot files: {e}')
 
-    # load the config file
     with open(config_file, 'r') as f:
         config = yaml.safe_load(f)
 
-    builder = YoBotBuilder(config_file=config_file)
+    builder = Builder(config_file=config_file)
 
     yobot = builder.yobot_build()  # Build the bot.
     if yobot:

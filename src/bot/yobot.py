@@ -32,7 +32,6 @@ class YoBot(commands.Bot):
         config_file (str): The path to the config file.
         avatar_file (str): The path to the avatar file.
         cogs_dir (str): The path to the cogs directory.
-        cogs_keys_dir (str): The path to the cogs keys directory.
         bot_name (str): The bot's name.
         presence (str): The bot's presence.
         owner_name (str): The bot owner's name.
@@ -40,7 +39,6 @@ class YoBot(commands.Bot):
         log_file (str): The path to the log file.
         log (YoBotLogger): The bot's logger.
         repo_info (str): The bot's repo info.
-        cog_verify_blacklist (list): The cog verification blacklist.
         cog_removal_blacklist (list): The cog removal blacklist.
         running (bool): Whether the bot is running.
     """
@@ -57,9 +55,6 @@ class YoBot(commands.Bot):
         self.log.debug('YoBot initialized.')
         self.running = True
         self.cogs_dir = self.config['file_paths']['cogs_dir']
-        self.cogs_keys_dir = self.config['file_paths']['cogs_key_file']
-        self.cogs_sigs_dir = self.config['file_paths']['cogs_sigs_dir']
-        self.cogs_verify_blacklist = self.config['blacklist']['cog_verify']
         self.cogs_removal_blacklist = self.config['blacklist']['cog_removal']
         self.avatar_file = self.config['file_paths']['avatar_file']
         self.bot_name = self.config['bot_name']
