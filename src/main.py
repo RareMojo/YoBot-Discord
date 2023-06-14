@@ -5,6 +5,7 @@ import yaml
 
 from utils.builder import Builder
 
+
 #                       __                 __
 #                      /\ \               /\ \__
 #    __  __      ___   \ \ \____    ___   \ \ ,_\
@@ -58,6 +59,7 @@ def launch_bot():
     images_dir = f'{root_dir}/resources/images'
     sounds_dir = f'{root_dir}/resources/sounds'
     texts_dir = f'{root_dir}/resources/texts'
+    ascii_logo = f'{root_dir}/resources/texts/logo.txt'
     try:
         try:
             print('Checking for directories...')
@@ -93,7 +95,8 @@ def launch_bot():
                 "resources_dir": resources_dir,
                 "images_dir": images_dir,
                 "sounds_dir": sounds_dir,
-                "texts_dir": texts_dir
+                "texts_dir": texts_dir,
+                "ascii_logo": ascii_logo
             }
 
             config = {
@@ -107,10 +110,10 @@ def launch_bot():
                 "dev_mode": False,
                 "update_bot": True,
                 "file_paths": file_paths,
-                "repo_info": {
+                "cog_github": {
                     "repo_owner": "RareMojo",
-                    "repo_name": "YoBot-Discord",
-                    "repo_dir": "Cogs",
+                    "repo_name": "YoBot-Discord-Cogs",
+                    "csv_file": "cogdescriptions.csv",
                 },
                 "blacklist": {
                     "cog_removal": ["yobotcorecog.py", "yobotcommandcog.py"],

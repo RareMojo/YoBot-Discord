@@ -1,5 +1,10 @@
 import collections.abc
+import csv
 import logging
+import os
+import shutil
+import subprocess
+import tempfile
 import traceback
 from typing import TYPE_CHECKING
 
@@ -47,7 +52,7 @@ async def welcome_to_yobot(yobot: 'YoBot') -> None:
         yobot.log.error(f'Error in welcome_to_yobot function: {e}')
 
 
-async def update_yobot(yobot: 'YoBot') -> None:
+async def update_with_discord(yobot: 'YoBot') -> None:
     """
     Updates YoBot's name, presence, and avatar to config values on Discord servers.
 
@@ -56,7 +61,7 @@ async def update_yobot(yobot: 'YoBot') -> None:
     """
     config_file = yobot.config_file
     successful = True  # Whether or not the update was successful.
-    yobot.log.debug('Starting update_yobot function...')
+    yobot.log.debug('Starting update_with_discord function...')
     yobot.log.debug('Checking for updates to YoBot settings...')
 
     if yobot.config['update_bot'] == True:
@@ -83,7 +88,7 @@ async def update_yobot(yobot: 'YoBot') -> None:
             successful = False
 
         if successful == True:
-            yobot.log.info(
+            yobot.log.debug(
                 'Successfully synchronized YoBot settings with Discord.')
             update_config(config_file, {"update_bot": False})
     else:
@@ -117,64 +122,6 @@ def get_boolean_input(yobot: 'YoBot', prompt: str) -> bool:
             yobot.log.error(f'Error occurred while getting boolean input: {e}')
             yobot.log.debug(f'Error details: {traceback.format_exc()}')
             yobot.log.warning('Invalid input. Try again.')
-
-
-def github_repo_fetch(yobot: 'YoBot', owner: str, repo: str, repo_dir: str) -> list:
-    """
-    Fetches a list of files from a repo/directory on GitHub.
-
-    Args:
-        owner (str): The owner of the repo.
-        repo (str): The name of the repo.
-        repo_dir (str): The directory of the repo.    
-    """
-    try:
-        url = f"https://api.github.com/repos/{owner}/{repo}/contents/{repo_dir}"
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            files = [file["name"]
-                     for file in response.json() if file["type"] == "file"]
-            return files
-        else:
-            yobot.log.debug(
-                f"Failed to fetch files from {owner}/{repo}/{repo_dir}. Response status code: {response.status_code}")
-            return []
-    except Exception as e:
-        yobot.log.error(
-            f"An error occurred while fetching files from {owner}/{repo}/{repo_dir}: {e}")
-        return []
-
-
-def github_repo_pull(yobot: 'YoBot', owner: str, repo: str, repo_dir: str, target_dir: str) -> None:
-    """
-    Pulls a repo/directory from GitHub.
-
-    Args:
-        yobot (YoBot): The YoBot instance.
-        owner (str): The owner of the repo.
-        repo (str): The name of the repo.
-        repo_dir (str): The directory of the repo.
-        target_dir (str): The directory to download the repo to.
-    """
-    try:
-        files = github_repo_fetch(yobot, owner, repo, repo_dir)
-
-        if files:
-            for file in files:
-                url = f"https://raw.githubusercontent.com/{owner}/{repo}/master/{repo_dir}/{file}"
-                response = requests.get(url)
-
-                if response.status_code == 200:
-                    with open(f"{target_dir}/{file}", "wb") as f:
-                        f.write(response.content)
-                    yobot.log.info(f'{file} downloaded.')
-                else:
-                    yobot.log.error(
-                        f'Error downloading {file}. Status code: {response.status_code}')
-    except Exception as e:
-        yobot.log.error(f'Error downloading files: {e}')
-        yobot.log.debug(f'Error details: {traceback.format_exc()}')
 
 
 def load_config(config_file: str) -> dict:
@@ -232,9 +179,8 @@ def update_config(config_file: str, updated_values: dict):
     except yaml.YAMLError as e:
         logging.warning(f"Error loading config file {config_file}: {e}")
         return
-
+    
     config = recursive_update(config, updated_values)
-
     try:
         with open(config_file, 'w') as file:
             yaml.safe_dump(config, file, default_flow_style=False)
@@ -245,64 +191,101 @@ def update_config(config_file: str, updated_values: dict):
     logging.debug(f"Config file {config_file} updated with {updated_values}")
     
     
-def download_cogs(yobot: 'YoBot', cogs_dir: str, repo_info: dict) -> None:
+
+def download_cogs(yobot: 'YoBot', owner: str, repo: str, file_name: str) -> list:
     """
-    Downloads cogs from the terminal. Use for setup or at the user's discretion.
+    Fetches a CSV file from a GitHub repository.
 
     Args:
         yobot (YoBot): The YoBot instance.
-        cogs_dir (str): The directory to download the cogs to.
-        sigs_dir (str): The directory to download the sigs to.
+        owner (str): The owner of the repo.
+        repo (str): The name of the repo.
+        file_name (str): The name of the file to fetch.
+
+    Returns:
+        list: The contents of the CSV file.
+    """
+    getcogs = get_boolean_input(yobot, 'Would you like to download extra extensions? (y/n) ')
+    if getcogs == True:
+        try:
+            url = f"https://raw.githubusercontent.com/{owner}/{repo}/master/{file_name}"
+            response = requests.get(url)
+
+            if response.status_code == 200:
+                yobot.log.debug(f'{file_name} fetched.')
+                csv_contents = response.text.splitlines()
+                csv_reader = csv.reader(csv_contents)
+                headers = next(csv_reader)
+                rows = list(csv_reader)
+                yobot.log.debug(f'Loaded file {file_name}:')
+                yobot.log.info(f"{headers[0]} | {headers[1]} | {headers[2]}")
+                
+                for i, row in enumerate(rows):
+                    yobot.log.info(f"{i+1}: {row[0]}, {row[1]} Author: {row[2]}")
+                row_num = input("Enter the row number of the extension to install: ")
+                try:
+                    row_num = int(row_num)
+                    if row_num < 1 or row_num > len(rows):
+                        raise ValueError
+                except ValueError:
+                    yobot.log.error("Invalid row number.")
+                    return []
+                link = rows[row_num-1][headers.index("Repo")]
+                extension_name = link.split("/")[-1]
+                try:
+                    yobot.log.info(f"Downloading {extension_name}...")
+                    github_clone_repo(yobot, link, yobot.config['file_paths']['cogs_dir'])
+                except Exception as e:
+                    yobot.log.error(f"Error downloading {extension_name}: {e}")
+                    return []
+                yobot.log.info(f"{extension_name} download successful.")
+                return rows
+            else:
+                yobot.log.error(
+                    f'Error fetching {file_name}. Status code: {response.status_code}')
+                return []
+        except Exception as e:
+            yobot.log.error(f'Error fetching {file_name}: {e}')
+            yobot.log.debug(f'Error details: {traceback.format_exc()}')
+            return []
+    else:
+        yobot.log.info("Skipping extra extensions.")
+        yobot.log.info("If you would like to install extra extensions, run the command 'getcogs'.")
+            
+
+def github_clone_repo(yobot: 'YoBot', repo: str, target_dir: str):
+    """
+    Clones a GitHub repository.
+    
+    Args:
+        yobot (YoBot): The YoBot instance.
+        repo (str): The GitHub repository to clone.
+        target_dir (str): The directory to clone the repository to.
     """
     try:
-        yobot.log.debug('Starting download_cogs function...')
-        get_cogs = get_boolean_input(
-            yobot, 'Do you want to download cogs? (y/n) ')
-        successful = False
+        yobot.log.debug(f"Cloning {repo} to {target_dir}...")
+        
+        with tempfile.TemporaryDirectory() as temp_dir:
+            command = ['git', 'clone', repo, temp_dir]
+            subprocess.check_call(command)
+            
+            for filename in os.listdir(temp_dir):
+                if filename == '.git': 
+                    continue
 
-        if get_cogs == True:
-            get_all_cogs = get_boolean_input(
-                yobot, 'Do you want to download all cogs? (y/n) ')
+                src_file = os.path.join(temp_dir, filename)
+                dst_file = os.path.join(target_dir, filename)
 
-            if get_all_cogs == True:
-                yobot.log.info('Downloading all cogs from the repository...')
-                github_repo_pull(
-                    yobot, repo_info['repo_owner'], repo_info['repo_name'], repo_info['repo_cogs'], cogs_dir)
-            else:
-                yobot.log.info(
-                    'Fetching the list of cogs from the repository...')
-                files = github_repo_fetch(
-                    yobot, "RareMojo", "YoBot-Discord-Cogs", "Cogs")
+                if os.path.exists(dst_file):
+                    if os.path.isfile(dst_file) or os.path.islink(dst_file):
+                        os.unlink(dst_file)
+                    else:
+                        shutil.rmtree(dst_file)
 
-                if files:
-                    yobot.log.info('List of cogs available:')
-                    for i, file in enumerate(files, start=1):
-                        yobot.log.info(f'{i}. {file}')
-
-                    selected_cogs = input(
-                        'Enter the numbers of the cogs you want to download (separated by commas): ')
-                    selected_cogs = [int(num.strip())
-                                     for num in selected_cogs.split(',')]
-
-                    successful = True
-                    yobot.log.debug(
-                        'Downloading selected cogs and their signatures from the repository...')
-
-                    for cog_index in selected_cogs:
-                        cog_name = files[cog_index - 1]
-                        url = f"https://raw.githubusercontent.com/RareMojo/YoBot-Discord-Cogs/master/Cogs/{cog_name}"
-
-                        response = requests.get(url)
-                        if response.status_code == 200:
-                            with open(f"{cogs_dir}/{cog_name}", "wb") as f:
-                                f.write(response.content)
-                            yobot.log.debug(f'{cog_name} downloaded.')
-                        else:
-                            yobot.log.error(f'Error downloading {cog_name}.')
-                            successful = False
-                if successful:
-                    yobot.log.debug('Cogs downloaded.')
-        else:
-            yobot.log.debug('Cogs not downloaded.')
+                shutil.move(src_file, target_dir)
+        
     except Exception as e:
-        yobot.log.error(f'Error downloading cogs: {e}')
+        yobot.log.error(f"Error cloning {repo}: {e}")
+        yobot.log.debug(f"Error details: {traceback.format_exc()}")
+    else:
+        yobot.log.debug(f"Cloned {repo} to {target_dir}.")

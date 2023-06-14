@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import discord.ext.commands as commands
 
-from utils.yobotlib import update_yobot, welcome_to_yobot
+from utils.yobotlib import update_with_discord, welcome_to_yobot
 
 if TYPE_CHECKING:
     from bot.yobot import YoBot
@@ -23,7 +23,7 @@ class YoBotCoreCog(commands.Cog, name='YoBot Core', description='Core Discord ev
         """Called when YoBot connects to Discord."""
         try:
             # Update YoBot's status and activity, if applicable.
-            await update_yobot(self.yobot)
+            await update_with_discord(self.yobot)
             self.yobot.log.debug('YoBot connected to Discord.')
         except Exception as e:
             self.yobot.log.error(f'Error updating YoBot: {e}')

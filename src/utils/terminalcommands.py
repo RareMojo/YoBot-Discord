@@ -24,6 +24,9 @@ class YoBotTerminalCommands():
 
     def __init__(self: 'YoBotTerminalCommands', yobot: 'YoBot', terminal_command: str):
         self.yobot = yobot
+        self.cog_repo_owner = self.yobot.repo_info['repo_owner']
+        self.cog_repo_name = self.yobot.repo_info['repo_name']
+        self.cog_repo_info = self.yobot.repo_info['repo_info']
         self.terminal_command = terminal_command
 
     async def handle_terminal_command(self):
@@ -77,8 +80,10 @@ class YoBotTerminalCommands():
 
         elif user_command in ['getcog', 'getcogs', 'gc']:
             self.yobot.log.debug('Downloading cogs...')
-            download_cogs(self.yobot, self.yobot.cogs_dir, self.yobot.config['repo_info'])
+            download_cogs(self.yobot, self.cog_repo_owner, self.cog_repo_name, self.cog_repo_info)
             await self.yobot.load_cogs()
+            self.yobot.log.info('Reloaded all cogs.')
+            self.yobot.log.info('You may need to resync with Discord to apply new commands.')
             await sync_commands(self.yobot)
 
         elif user_command in ['removecog', 'removecogs', 'rc']:
@@ -108,7 +113,7 @@ class YoBotTerminalCommands():
         elif user_command in ['removeblacklist', 'rmblist', 'rmbl']:
             self.yobot.log.debug('Removing from blacklist...')
             remove_blacklist()
-
+            
         else:
             self.yobot.log.info(
                 f"'{user_command}' is not a recognized command.")
@@ -537,12 +542,14 @@ async def sync_commands(yobot: 'YoBot') -> None:
     Args:
         yobot (YoBot): The YoBot instance.
     """
+    yobot.log.debug('Synchronizing commands...')
     try:
         synchronize = get_boolean_input(
             yobot, 'Do you want to synchronize commands? (y/n) ')
 
         if synchronize == True:
             # Try to update commands on Discord servers.
+            yobot.log.debug('Updating commands on Discord servers...')
             sync_list = await yobot.tree.sync()
             yobot.log.info(f'{len(sync_list)} commands synchronized.')
         else:

@@ -6,15 +6,18 @@ if TYPE_CHECKING:
     from bot.yobot import YoBot
 
 
+
 class YoBotCommandCog(commands.Cog, name="YoBot Discord Commands", description="All available Discord commands."):
-    """Discord commands for YoBot to execute.
+    """
+    Discord commands for YoBot to execute.
 
     Attributes:
       yobot (YoBot): The bot instance.
     """
 
-    def __init__(self: 'YoBotCommandCog', yobot: 'YoBot'):
+    def __init__(self, yobot: 'YoBot'):
         self.yobot = yobot
+
 
     @commands.hybrid_command(name="ping")
     async def ping_command(self, ctx: commands.Context) -> None:
@@ -24,6 +27,7 @@ class YoBotCommandCog(commands.Cog, name="YoBot Discord Commands", description="
         except Exception as e:
             self.yobot.log.error(f"Error in ping_command: {e}")
             await ctx.send("An error occurred while executing the command.")
+
 
     @commands.hybrid_command(name="admin")
     async def admin_command(self, ctx: commands.Context) -> None:
@@ -42,6 +46,7 @@ class YoBotCommandCog(commands.Cog, name="YoBot Discord Commands", description="
                 self.yobot.log.error(f"Error in admin_command: {e}")
             self.yobot.log.warning(
                 f"{ctx.author} tried to use the ping command.")
+
 
     @commands.command(name="restart")
     async def restart(self, ctx):

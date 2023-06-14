@@ -25,16 +25,21 @@ class Builder(YoBot):
     def __init__(self, config_file: str):
         self.config_file = config_file
         self.config = load_config(self.config_file)
+        self.logo_file = self.config['file_paths']['ascii_logo']
         self.log_file = self.config['file_paths']['log_file']
         self.avatar_file = self.config['file_paths']['avatar_file']
         self.cogs_dir = self.config['file_paths']['cogs_dir']
-        self.repo_info = self.config['repo_info']
+        self.repo_info = self.config['cog_repo']
         self.log = YoBotLogger(name='YoBot', log_file=self.log_file,
                                level=self.config['log_level'], maxBytes=1000000, backupCount=1) # Setup the logger.
+        with open(self.logo_file, 'r') as logo:
+            self.logo = logo.read()
+        green = '\033[92m'
+        reset = '\033[0m'
+        self.log.info('\n' + green + self.logo + reset + '\n')
 
     def setup_cogs(self):
         """Downloads the selected cogs from the YoBot repository if the option is selected."""
-        self.log.info('Launching YoBot...')
         self.log.debug('Building YoBot instance...')
         try:
             self.log.debug('Checking for cogs directory...')
@@ -52,9 +57,9 @@ class Builder(YoBot):
 
                 if config['update_bot']:
                     self.log.debug('Trying to build cogs')
-                    self.log.info('Running first time Cog installation...')
-                    download_cogs(self, self.cogs_dir, self.repo_info)
-                    self.log.info('Cog installation complete.')
+                    self.log.info('Running first time Cog setup...')
+                    download_cogs(self, self.repo_info['repo_owner'], self.repo_info['repo_name'], self.repo_info['csv_file'])
+                    self.log.info('Cog setup complete.')
         except FileNotFoundError as e:
             self.log.error(f'Error setting up YoBot cogs: {e}')
         except Exception as e:

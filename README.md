@@ -20,7 +20,6 @@
 
   - [Installation](https://github.com/RareMojo/YoBot-Discord/wiki/Installation)
   - [Configuration](https://github.com/RareMojo/YoBot-Discord/wiki/Configuration)
-  - [File Structure](https://github.com/RareMojo/YoBot-Discord/wiki/Filestructure)
   - [Extra Cog Installation](https://github.com/RareMojo/YoBot-Discord-Cogs)
   - [Cog Creation](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html)
 
@@ -54,7 +53,7 @@ These commands allow for great customizability and control without digging throu
 
 You can easily create new commands for the terminal and it is another great way to learn Python without having to worry about the rest of the bot.
 
-Start creating them in `terminalcommands.py` within class `YobotTerminalCommands()` by calling/creating functions in `yobotlib.py`.
+Start creating them in `terminalcommands.py` within class `YobotTerminalCommands()`.
 
 <br>
 

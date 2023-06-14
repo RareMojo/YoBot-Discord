@@ -13,17 +13,6 @@ if TYPE_CHECKING:
     from utils.logger import YoBotLogger
 
 
-#                       __                 __
-#                      /\ \               /\ \__
-#    __  __      ___   \ \ \____    ___   \ \ ,_\
-#   /\ \/\ \    / __`\  \ \ '__`\  / __`\  \ \ \/
-#   \ \ \_\ \  /\ \L\ \  \ \ \L\ \/\ \L\ \  \ \ \_
-#    \/`____ \ \ \____/   \ \_,__/\ \____/   \ \__\
-#     `/___/> \ \/___/     \/___/  \/___/     \/__/
-#        /\___/
-#        \/__/                 by  R A R E M O J O
-
-
 class YoBot(commands.Bot):
     """Main YoBot class that handles the bot's initialization and startup.
 
@@ -61,7 +50,7 @@ class YoBot(commands.Bot):
         self.presence = self.config['presence']
         self.owner_name = self.config['owner_name']
         self.owner_id = self.config['owner_id']
-        self.repo_info = self.config['repo_info']
+        self.repo_info = self.config['cog_repo']
 
     async def start_bot(self):
         """Starts YoBot."""
@@ -106,5 +95,4 @@ class YoBot(commands.Bot):
         except Exception as e:
             self.log.error(f'Failed to load cogs {cog_name}.')
             self.log.error(f'Error: {e}')
-
         self.log.debug(f'Loaded {loaded_extensions} cogs.')
