@@ -3,8 +3,8 @@ import os
 
 import yaml
 
-from utils.builder import Builder
-
+from utils.yobot_builder import Builder
+from utils.yobot_configs import Configs
 
 #                       __                 __
 #                      /\ \               /\ \__
@@ -99,7 +99,7 @@ def launch_bot():
                 "ascii_logo": ascii_logo
             }
 
-            config = {
+            new_config = {
                 "owner_name": input('Owner Name: '),
                 "owner_id": input('Owner ID: '),
                 "prefix": input('Command Prefix: '),
@@ -110,10 +110,10 @@ def launch_bot():
                 "dev_mode": False,
                 "update_bot": True,
                 "file_paths": file_paths,
-                "cog_github": {
+                "cog_repo": {
                     "repo_owner": "RareMojo",
                     "repo_name": "YoBot-Discord-Cogs",
-                    "csv_file": "cogdescriptions.csv",
+                    "repo_info": "cogdescriptions.csv",
                 },
                 "blacklist": {
                     "cog_removal": ["yobotcorecog.py", "yobotcommandcog.py"],
@@ -121,17 +121,16 @@ def launch_bot():
             }
 
             with open(config_file, 'w') as f:
-                yaml.dump(config, f)
+                yaml.dump(new_config, f, default_flow_style=False)
             print('Config file created.')
         else:
             print('Config file found.')
     except Exception as e:
         print(f'Error setting up YoBot files: {e}')
 
-    with open(config_file, 'r') as f:
-        config = yaml.safe_load(f)
-
-    builder = Builder(config_file=config_file)
+    config = Configs(config_file)
+    config.load()
+    builder = Builder(config=config)
 
     yobot = builder.yobot_build()  # Build the bot.
     if yobot:

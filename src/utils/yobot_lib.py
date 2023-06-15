@@ -1,6 +1,4 @@
-import collections.abc
 import csv
-import logging
 import os
 import shutil
 import subprocess
@@ -34,14 +32,14 @@ async def welcome_to_yobot(yobot: 'YoBot') -> None:
 
         yobot.log.info('YoBot is online and ready.')
         # If this is not the first run, print a welcome back message.
-        if not yobot.config['update_bot']:
+        if yobot.config_file.get('update_bot') == False:
             yobot.log.info('Welcome back to YoBot, {}!'.format(
-                yobot.config['owner_name']))
+                yobot.config_file.get('owner_name')))
             yobot.log.info('Type "help" for a list of terminal commands.')
 
         else:  # If this is the first run, print a welcome message.
             yobot.log.info('Welcome to YoBot, {}!'.format(
-                yobot.config['owner_name']))
+                yobot.config_file.get('owner_name')))
             yobot.log.info(
                 'Be sure to check out the documentation at the GitHub repository.')
             yobot.log.info(
@@ -59,12 +57,11 @@ async def update_with_discord(yobot: 'YoBot') -> None:
     Args:
         yobot (YoBot): The bot instance.
     """
-    config_file = yobot.config_file
     successful = True  # Whether or not the update was successful.
     yobot.log.debug('Starting update_with_discord function...')
     yobot.log.debug('Checking for updates to YoBot settings...')
-
-    if yobot.config['update_bot'] == True:
+    update = yobot.config_file.get('update_bot')
+    if update == True:
         yobot.log.info('First run or changes detected!')
         yobot.log.info('Setting name, presence, and avatar to config values.')
         yobot.log.warning(
@@ -76,7 +73,7 @@ async def update_with_discord(yobot: 'YoBot') -> None:
             with open(yobot.avatar_file, 'rb') as f:
                 new_avatar = f.read()
                 await yobot.user.edit(avatar=new_avatar)
-            await yobot.user.edit(username=yobot.config['bot_name'])
+            await yobot.user.edit(username=yobot.config_file.get('bot_name'))
             await yobot.change_presence(activity=discord.Game(name=yobot.presence))
         except Exception as e:
             yobot.log.error('Error: {}'.format(e))
@@ -90,7 +87,9 @@ async def update_with_discord(yobot: 'YoBot') -> None:
         if successful == True:
             yobot.log.debug(
                 'Successfully synchronized YoBot settings with Discord.')
-            update_config(config_file, {"update_bot": False})
+            yobot.config_file.load()
+            yobot.config_file.set('update_bot', False)
+            yobot.config_file.save()
     else:
         yobot.log.info('YoBot settings are up to date.')
         yobot.log.info('Connected to Discord.')
@@ -122,75 +121,7 @@ def get_boolean_input(yobot: 'YoBot', prompt: str) -> bool:
             yobot.log.error(f'Error occurred while getting boolean input: {e}')
             yobot.log.debug(f'Error details: {traceback.format_exc()}')
             yobot.log.warning('Invalid input. Try again.')
-
-
-def load_config(config_file: str) -> dict:
-    """
-    Load a YAML configuration file.
-
-    Args:
-        config_file (str): The path to the YAML configuration file.
-
-    Returns:
-        dict: The configuration settings.
-    """
-    try:
-        with open(config_file, 'r') as file:
-            config = yaml.safe_load(file)
-    except FileNotFoundError:
-        logging.warning(f"Config file {config_file} not found.")
-        return {}
-    except yaml.YAMLError as e:
-        logging.warning(f"Error loading config file {config_file}: {e}")
-        return {}
-    return config
-
-
-def recursive_update(original, update):
-    """
-    Recursively updates a dictionary.
-
-    Args:
-        original (dict): The original dictionary.
-        update (dict): The new dictionary with values to update.
-    """
-    for key, value in update.items():
-        if isinstance(value, collections.abc.Mapping):
-            original[key] = recursive_update(original.get(key, {}), value)
-        else:
-            original[key] = value
-    return original
-
-
-def update_config(config_file: str, updated_values: dict):
-    """
-    Update a YAML configuration file.
-
-    Args:
-        config_file (str): The path to the YAML configuration file.
-        updated_values (dict): The new configuration settings.
-    """
-    try:
-        with open(config_file, 'r') as file:
-            config = yaml.safe_load(file)
-    except FileNotFoundError:
-        logging.warning(f"Config file {config_file} not found.")
-        return
-    except yaml.YAMLError as e:
-        logging.warning(f"Error loading config file {config_file}: {e}")
-        return
-    
-    config = recursive_update(config, updated_values)
-    try:
-        with open(config_file, 'w') as file:
-            yaml.safe_dump(config, file, default_flow_style=False)
-    except yaml.YAMLError as e:
-        logging.warning(f"Error writing to config file {config_file}: {e}")
-        return
-
-    logging.debug(f"Config file {config_file} updated with {updated_values}")
-    
-    
+            
 
 def download_cogs(yobot: 'YoBot', owner: str, repo: str, file_name: str) -> list:
     """
@@ -234,7 +165,7 @@ def download_cogs(yobot: 'YoBot', owner: str, repo: str, file_name: str) -> list
                 extension_name = link.split("/")[-1]
                 try:
                     yobot.log.info(f"Downloading {extension_name}...")
-                    github_clone_repo(yobot, link, yobot.config['file_paths']['cogs_dir'])
+                    github_clone_repo(yobot, link, yobot.cogs_dir)
                 except Exception as e:
                     yobot.log.error(f"Error downloading {extension_name}: {e}")
                     return []

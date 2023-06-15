@@ -5,7 +5,7 @@ import re
 from logging.handlers import RotatingFileHandler
 from typing import TYPE_CHECKING
 
-from utils.terminalcommands import YoBotTerminalCommands
+from utils.yobot_terminal import YoBotTerminalCommands
 
 if TYPE_CHECKING:
     from bot.yobot import YoBot
@@ -128,7 +128,6 @@ class YoBotLoggerRotator(RotatingFileHandler):
         except Exception:
             self.handleError(record)
 
-
 async def terminal_command_loop(yobot: 'YoBot'):
     """The main YoBotLogger terminal command loop."""
     loop = asyncio.get_event_loop()
@@ -147,7 +146,7 @@ async def terminal_command_loop(yobot: 'YoBot'):
     while yobot.running:
         # Prevents the terminal from using too much CPU.
         await asyncio.sleep(delay)
-        terminal_format = f'{black}{bold}[{purple}YoBot{reset}{black}{bold}]{reset} {yobot.owner_name}{bold}{black}@{reset}{yobot.config["bot_name"]}{reset}'
+        terminal_format = f'{black}{bold}[{purple}YoBot{reset}{black}{bold}]{reset} {yobot.owner_name}{bold}{black}@{reset}{yobot.config_file.get("bot_name")}{reset}'
         terminal_prompt = f'{terminal_format}{black}{bold}: > {reset}'
         # Get the terminal command.
         terminal_command = loop.run_in_executor(None, input, terminal_prompt)

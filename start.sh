@@ -13,4 +13,4 @@ echo "Installing dependencies..."
 pip install -r requirements.txt --progress-bar on
 
 echo "Starting YoBot..."
-python src/main.py
+python3 src/main.py

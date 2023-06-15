@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import discord.ext.commands as commands
 
-from utils.yobotlib import update_with_discord, welcome_to_yobot
+from utils.yobot_lib import update_with_discord, welcome_to_yobot
 
 if TYPE_CHECKING:
     from bot.yobot import YoBot

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import discord
 import yaml
 
-from utils.yobotlib import (get_boolean_input, download_cogs, load_config, update_config)
+from utils.yobot_lib import (get_boolean_input, download_cogs)
 
 if TYPE_CHECKING:
     from bot.yobot import YoBot
@@ -24,9 +24,7 @@ class YoBotTerminalCommands():
 
     def __init__(self: 'YoBotTerminalCommands', yobot: 'YoBot', terminal_command: str):
         self.yobot = yobot
-        self.cog_repo_owner = self.yobot.repo_info['repo_owner']
-        self.cog_repo_name = self.yobot.repo_info['repo_name']
-        self.cog_repo_info = self.yobot.repo_info['repo_info']
+        self.cog_repo_info = self.yobot.config_file.get('cog_repo')
         self.terminal_command = terminal_command
 
     async def handle_terminal_command(self):
@@ -80,7 +78,7 @@ class YoBotTerminalCommands():
 
         elif user_command in ['getcog', 'getcogs', 'gc']:
             self.yobot.log.debug('Downloading cogs...')
-            download_cogs(self.yobot, self.cog_repo_owner, self.cog_repo_name, self.cog_repo_info)
+            download_cogs(self.yobot, self.cog_repo_info['repo_owner'], self.cog_repo_info['repo_name'], self.cog_repo_info['repo_info'])
             await self.yobot.load_cogs()
             self.yobot.log.info('Reloaded all cogs.')
             self.yobot.log.info('You may need to resync with Discord to apply new commands.')
@@ -112,12 +110,11 @@ class YoBotTerminalCommands():
 
         elif user_command in ['removeblacklist', 'rmblist', 'rmbl']:
             self.yobot.log.debug('Removing from blacklist...')
-            remove_blacklist()
+            remove_blacklist(self.yobot)
             
         else:
             self.yobot.log.info(
                 f"'{user_command}' is not a recognized command.")
-
 
 
 # Terminal Commands Functions
@@ -128,84 +125,78 @@ def add_blacklist(yobot: 'YoBot') -> None:
     """
     try:
         edit_confirm = get_boolean_input(yobot, 'Are you sure you want to add to the blacklist? (y/n) ')
-        config = load_config(yobot.config_file)
-        
+        config = yobot.config_file
+
         if not edit_confirm:
             return
         else:
-                cogs = list_cogs(yobot, yobot.cogs_dir)
-                yobot.log.info('Choose the cog to add to the blacklist:')
-                
-                for i, cog in enumerate(cogs, start=1):
-                    yobot.log.info(f"{i}. {cog}")
+            cogs = list_cogs(yobot, config.get('file_paths.cogs_dir'))
+            yobot.log.info('Choose the cog to add to the blacklist:')
 
-                cog_index = int(
-                    input('Enter the number of the cog you want to blacklist: '))
-                cog_name = cogs[cog_index - 1]
-                blacklist = config.get('blacklist', {}).get('cog_removal', [])
+            cog_index = int(input('Enter the number of the cog you want to blacklist: '))
+            cog_name = cogs[cog_index - 1]
+            blacklist = config.get('blacklist.cog_removal')
 
-                if cog_name in blacklist:
-                    yobot.log.warning(
-                        f"'{cog_name}' is already in the cog removal blacklist.")
-                    return
+            if cog_name in blacklist:
+                yobot.log.warning(f"'{cog_name}' is already in the cog removal blacklist.")
+                return
 
-                blacklist.append(cog_name)
-                updated_config = {"blacklist": {'cog_removal': blacklist}}
+            blacklist.append(cog_name)
 
-                try:
-                    update_config(yobot.config_file, updated_config)
-                except Exception as e:
-                    yobot.log.debug(
-                        f"Failed to update the configuration file: {e}")
-                    return yobot.log.warning('Failed to add the cog to the cog removal blacklist.')
+            try:
+                config.load()
+                config.set_all('blacklist.cog_removal', blacklist)
+                config.save()
+            except Exception as e:
+                yobot.log.debug(f"Failed to update the configuration file: {e}")
+                return yobot.log.warning('Failed to add the cog to the cog removal blacklist.')
 
-                yobot.log.info(
-                    f"'{cog_name}' has been added to the cog removal blacklist.")
+            yobot.log.info(f"'{cog_name}' has been added to the cog removal blacklist.")
     except Exception as e:
         yobot.log.debug(f"Failed to add to the cog removal blacklist: {e}")
         yobot.log.warning('Failed to add to the cog removal blacklist.')
-
+        
 
 def remove_blacklist(yobot: 'YoBot') -> None:
     """
-    Remove something from a blacklist.
+    Remove a cog from the blacklist.
     """
     try:
         edit_confirm = get_boolean_input(yobot, 'Are you sure you want to remove from the blacklist? (y/n) ')
+        config = yobot.config_file
 
         if not edit_confirm:
             return
         else:
-
-            config = load_config(yobot.config_file)
-            blacklist = config.get('blacklist', {})
-            blacklist_cog_removal = blacklist.get('cog_removal', [])
-
-            if not blacklist_cog_removal:
-                yobot.log.warning('Cog removal blacklist is empty.')
+            blacklist = config.get('blacklist.cog_removal')
+            if not blacklist:
+                yobot.log.warning('The cog removal blacklist is empty.')
                 return
 
-            yobot.log.info(
-                'Here are the current cogs in the cog removal blacklist:')
-            for i, cog in enumerate(blacklist_cog_removal):
-                yobot.log.info(f'{i+1}. {cog}')
-            cog_number = int(
-                input('Enter the number of the cog you would like to remove: '))
+            yobot.log.info('Choose the cog to remove from the blacklist:')
+            for i, cog_name in enumerate(blacklist):
+                yobot.log.info(f'{i+1}. {cog_name}')
 
-            if cog_number < 1 or cog_number > len(blacklist_cog_removal):
-                yobot.log.warning('Invalid cog number.')
+            cog_index = int(input('Enter the number of the cog you want to remove: '))
+            cog_name = blacklist[cog_index - 1]
+
+            if cog_name not in blacklist:
+                yobot.log.warning(f"'{cog_name}' is not in the cog removal blacklist.")
                 return
 
-            cog_name = blacklist_cog_removal.pop(cog_number - 1)
-            blacklist['cog_removal'] = blacklist_cog_removal
+            blacklist.remove(cog_name)
 
-        update_config(yobot.config_file, {"blacklist": blacklist})
-        yobot.log.info(
-            f"'{cog_name}' has been removed from the chosen blacklist.")
+            try:
+                config.set_all('blacklist.cog_removal', blacklist)
+                config.save()
+            except Exception as e:
+                yobot.log.debug(f"Failed to update the configuration file: {e}")
+                return yobot.log.warning('Failed to remove the cog from the cog removal blacklist.')
 
+            yobot.log.info(f"'{cog_name}' has been removed from the cog removal blacklist.")
     except Exception as e:
-        yobot.log.debug(f"Error removing from blacklist: {e}")
-        yobot.log.warning('Failed to remove from blacklist.')
+        yobot.log.debug(f"Failed to remove from the cog removal blacklist: {e}")
+        yobot.log.warning('Failed to remove from the cog removal blacklist.') 
     
     
 def toggle_dev_mode(yobot: 'YoBot') -> None:
@@ -216,22 +207,20 @@ def toggle_dev_mode(yobot: 'YoBot') -> None:
         yobot (YoBot): The YoBot instance.
     """
     try:
-        config = load_config(yobot.config_file)
-        if config['dev_mode'] == True:
+        config = yobot.config_file
+        config.load()
+        if config.get('dev_mode') is True:
             yobot.log.info('Disabling dev mode...')
-            update_config(yobot.config_file, {"dev_mode": False})
+            config.set('dev_mode', False)
+            config.save()
             yobot.log.info('Restarting to apply changes...')
         else:
             yobot.log.info('Enabling dev mode...')
-            update_config(yobot.config_file, {"dev_mode": True})
+            config.set('dev_mode', True)
+            config.save()
             yobot.log.info('Restarting to apply changes...')
         input('Press ENTER to EXIT.')
         yobot.stop_bot()
-    except FileNotFoundError:
-        yobot.log.warning(f"Config file {yobot.config_file} not found.")
-    except yaml.YAMLError as e:
-        yobot.log.warning(
-            f"Error loading config file {yobot.config_file}: {e}")
     except Exception as e:
         yobot.log.warning(f"An error occurred while toggling dev mode: {e}")
     else:
@@ -243,14 +232,16 @@ def toggle_debug_mode(yobot: 'YoBot') -> None:
     Toggles debug log messages.
     """
     try:
-        config = load_config(yobot.config_file)
-        if config['log_level'] == 'DEBUG':
+        config = yobot.config_file
+        if config.get('log_level') == 'DEBUG':
             yobot.log.info('Disabling debug mode...')
-            update_config(yobot.config_file, {"log_level": "INFO"})
+            config.set('log_level', 'INFO')
+            config.save()
             yobot.log.info('Restarting to apply changes...')
         else:
             yobot.log.info('Enabling debug mode...')
-            update_config(yobot.config_file, {"log_level": "DEBUG"})
+            config.set('log_level', 'DEBUG')
+            config.save()
             yobot.log.setLevel(logging.DEBUG)
             yobot.log.info('Restarting to apply changes...')
         input('Press ENTER to EXIT.')
@@ -275,8 +266,8 @@ def remove_cogs(yobot: 'YoBot', cogs_dir: str) -> None:
         cogs_dir (str): The directory to download the cogs to.    
     """
     yobot.log.debug(f"Ignored cogs: {yobot.cogs_removal_blacklist}")
-
     try:
+        config = yobot.config_file
         remove_cogs = get_boolean_input(
             yobot, 'Do you want to uninstall cogs? (y/n) ')
         successful = False
@@ -291,9 +282,8 @@ def remove_cogs(yobot: 'YoBot', cogs_dir: str) -> None:
 
                 if confirm_remove_all == True:
                     yobot.log.info('Uninstalling all cogs...')
-
                     for file in os.listdir(cogs_dir):
-                        if file.endswith('cog.py') and file not in yobot.cogs_removal_blacklist:
+                        if file.endswith('cog.py') and file not in config.get('blacklist.cog_removal'):
                             try:
                                 os.remove(f'{cogs_dir}/{file}')
                                 yobot.log.debug(
@@ -307,7 +297,7 @@ def remove_cogs(yobot: 'YoBot', cogs_dir: str) -> None:
                 yobot.log.info(
                     'Fetching the list of cogs from the cogs directory...')
                 files = [file for file in os.listdir(cogs_dir) if file.endswith(
-                    'cog.py') and file not in yobot.cogs_removal_blacklist]
+                    'cog.py') and file not in config.get('blacklist.cog_removal')]
                 yobot.log.debug(f"List of installed cogs: {files}")
 
                 for i, file in enumerate(files, start=1):
@@ -341,6 +331,11 @@ def remove_cogs(yobot: 'YoBot', cogs_dir: str) -> None:
                     list_cogs(yobot, cogs_dir)
                 else:
                     yobot.log.info('Cogs not uninstalled.')
+    except FileNotFoundError:
+        yobot.log.warning(f"Config file {yobot.config_file} not found.")
+    except yaml.YAMLError as e:
+        yobot.log.warning(
+            f"Error loading config file {yobot.config_file}: {e}")
     except Exception as e:
         yobot.log.error(f"Error occurred while uninstalling cogs: {e}")
 
@@ -390,6 +385,8 @@ def wipe_config(yobot: 'YoBot') -> None:
         yobot (YoBot): The bot instance.
     """
     try:
+        config = yobot.config_file
+        config.load()
         yobot.log.warning(
             'This will wipe the config file and shut down YoBot.')
         wipe = get_boolean_input(
@@ -401,6 +398,8 @@ def wipe_config(yobot: 'YoBot') -> None:
 
             if wipe_confirm == True:
                 os.remove(yobot.config_file)
+                config.clear()
+                config.save()
                 yobot.log.info('Config file wiped.')
                 yobot.log.warning('YoBot will now shut down.')
                 exit_bot_terminal(yobot)
@@ -438,8 +437,9 @@ async def set_bot_name(yobot: 'YoBot') -> None:
         yobot (YoBot): The YoBot instance.
     """
     try:
+        config = yobot.config_file
         yobot.log.debug('Setting bot name...')
-        yobot.log.info(f'Current name: {yobot.config["bot_name"]}')
+        yobot.log.info(f'Current name: {config.get("bot_name")}')
         change_bot_name = get_boolean_input(
             yobot, 'Do you want to change YoBots name? (y/n) ')
 
@@ -448,9 +448,10 @@ async def set_bot_name(yobot: 'YoBot') -> None:
             try:
                 await yobot.user.edit(username=new_name)
                 yobot.log.info(
-                    'Config change, bot_name: {} -> {}'.format(yobot.config['bot_name'], new_name))
-                update_config(yobot.config_file, {
-                            "bot_name": new_name, "update_bot": True})
+                    'Config change, bot_name: {} -> {}'.format(config.get('bot_name'), new_name))
+                config.set('bot_name', new_name)
+                config.set('update_bot', True)
+                config.save()
             except Exception as e:
                 yobot.log.error('Error: {}'.format(e))
                 yobot.log.warning('Bot name not changed on Discord servers.')
@@ -471,6 +472,7 @@ async def set_bot_avatar(yobot: 'YoBot') -> None:
         yobot (YoBot): The YoBot instance.
     """
     try:
+        config = yobot.config_file
         yobot.log.debug('Setting bot avatar...')
         yobot.log.info(
             'This sets the avatar to the image at ../resources/images/avatar.png')
@@ -491,7 +493,8 @@ async def set_bot_avatar(yobot: 'YoBot') -> None:
                 successful = False
 
             if successful == False:
-                update_config(yobot.config_file, {"update_bot": True})
+                config.set('update_bot', True)
+                config.save()
 
             if successful == True:
                 yobot.log.info('Avatar changed.')
@@ -512,19 +515,21 @@ async def set_bot_presence(yobot: 'YoBot') -> None:
         yobot (YoBot): The YoBot instance.
     """
     try:
-        yobot.log.info('Current presence: {}'.format(yobot.presence))
+        config = yobot.config_file
+        yobot.log.info('Current presence: {}'.format(config.get('presence')))
         update_presence = get_boolean_input(
             yobot, 'Do you want to change the presence? (y/n) ')
 
         if update_presence == True:
             new_presence = input('Enter new presence: ')
-            update_config(yobot.config_file, {
-                        "presence": new_presence, "update_bot": True})
+            config.set('presence', new_presence)
+            config.set('update_bot', True)
+            config.save()
             try:
                 # Try to change the presence on Discord servers.
                 await yobot.change_presence(activity=discord.Game(name=new_presence))
                 yobot.log.info(
-                    'Config change, presence: {} -> {}'.format(yobot.presence, new_presence))
+                    'Config change, presence: {} -> {}'.format(config.get('presence'), new_presence))
             except Exception as e:
                 yobot.log.error('Error: {}'.format(e))
                 yobot.log.warning('Presence not changed.')
@@ -544,6 +549,8 @@ async def sync_commands(yobot: 'YoBot') -> None:
     """
     yobot.log.debug('Synchronizing commands...')
     try:
+        config = yobot.config_file
+        yobot.log.debug('Synchronizing commands...')
         synchronize = get_boolean_input(
             yobot, 'Do you want to synchronize commands? (y/n) ')
 
@@ -552,6 +559,8 @@ async def sync_commands(yobot: 'YoBot') -> None:
             yobot.log.debug('Updating commands on Discord servers...')
             sync_list = await yobot.tree.sync()
             yobot.log.info(f'{len(sync_list)} commands synchronized.')
+            config.set('update_bot', True)
+            config.save()
         else:
             yobot.log.info('Commands not synchronized.')
     except Exception as e:
@@ -570,8 +579,9 @@ async def set_owner(yobot: 'YoBot') -> None:
         yobot (YoBot): The YoBot instance.
     """
     try:
+        config = yobot.config_file
         yobot.log.info(
-            f'Current owner: {yobot.config["owner_name"]} - {yobot.config["owner_id"]}')
+            f"Current owner: {config.get('owner_name')} - {config.get('owner_id')}")
         change_owner_name = get_boolean_input(
             yobot, 'Do you want to change YoBots owner? (y/n) ')
 
@@ -579,13 +589,15 @@ async def set_owner(yobot: 'YoBot') -> None:
             new_owner_name = input('Enter new owner name: ')
             new_owner_id = input('Enter new owner id: ')
 
-            update_config(yobot.config_file, {
-                        "owner_name": new_owner_name, "owner_id": new_owner_id})
+            config.set('owner_name', new_owner_name)
+            config.set('owner_id', new_owner_id)
+            config.set('update_bot', True)
+            config.save()
 
             yobot.log.info(
-                'Config change, owner_name: {} -> {}'.format(yobot.config['owner_name'], new_owner_name))
+                'Config change, owner_name: {} -> {}'.format(config.get('owner_name'), new_owner_name))
             yobot.log.info(
-                'Config change, owner_id: {} -> {}'.format(yobot.config['owner_id'], new_owner_id))
+                'Config change, owner_id: {} -> {}'.format(config.get('owner_id'), new_owner_id))
         else:
             yobot.log.info('Owner not changed.')
     except Exception as e:

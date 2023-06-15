@@ -2,15 +2,17 @@ import asyncio
 import os
 from typing import TYPE_CHECKING
 
+import yaml
 from discord.ext import commands
 
-from utils.logger import terminal_command_loop
-from utils.yobotlib import load_config
+from utils.yobot_configs import Configs
+from utils.yobot_exceptions import *
+from utils.yobot_logger import terminal_command_loop
 
 if TYPE_CHECKING:
     from discord import Intents
 
-    from utils.logger import YoBotLogger
+    from utils.yobot_logger import YoBotLogger
 
 
 class YoBot(commands.Bot):
@@ -32,25 +34,27 @@ class YoBot(commands.Bot):
         running (bool): Whether the bot is running.
     """
 
-    def __init__(self, intents: 'Intents', config_file: str, logger: 'YoBotLogger'):
-        self.config_file = config_file
-        self.config = load_config(config_file)  # Ensure this is loaded first.
-        self.log_file = self.config['file_paths']['log_file']
+    def __init__(self, intents: 'Intents', config: Configs, logger: 'YoBotLogger'):
+        self.config_file = config
+        try:
+            self.config_file.load  # Ensure this is loaded first.
+        except yaml.YAMLError as e:
+            raise ConfigException(self.config_file, e)
+        self.log_file = self.config_file.get('file_paths.log_file')
         self.log = logger
         self.log.debug('YoBot built.')
 
-        super().__init__(command_prefix=self.config['prefix'], intents=intents)
+        super().__init__(command_prefix=self.config_file.get('prefix'), intents=intents)
         """Initializes the bot."""
         self.log.debug('YoBot initialized.')
         self.running = True
-        self.cogs_dir = self.config['file_paths']['cogs_dir']
-        self.cogs_removal_blacklist = self.config['blacklist']['cog_removal']
-        self.avatar_file = self.config['file_paths']['avatar_file']
-        self.bot_name = self.config['bot_name']
-        self.presence = self.config['presence']
-        self.owner_name = self.config['owner_name']
-        self.owner_id = self.config['owner_id']
-        self.repo_info = self.config['cog_repo']
+        self.cogs_dir = self.config_file.get('file_paths.cogs_dir')
+        self.cogs_removal_blacklist = self.config_file.get('blacklist.cog_removal')
+        self.avatar_file = self.config_file.get('file_paths.avatar_file')
+        self.bot_name = self.config_file.get('bot_name')
+        self.presence = self.config_file.get('presence')
+        self.owner_name = self.config_file.get('owner_name')
+        self.owner_id = self.config_file.get('owner_id')
 
     async def start_bot(self):
         """Starts YoBot."""
@@ -58,9 +62,11 @@ class YoBot(commands.Bot):
         await self.load_cogs()
         # This is for the bot itself.
         yobot_task = asyncio.create_task(
-            self.start(self.config['discord_token']))
+            self.start(self.config_file.get('discord_token')), name='yobot')
         # This is for the terminal commands.
-        command_task = asyncio.create_task(terminal_command_loop(self))
+        command_task = asyncio.create_task(terminal_command_loop(self), name='terminal')
+        # This is for Flask to run the web server.
+        #flask_task = asyncio.create_task(start_server(self))
         try:
             while self.running:
                 # This is to allow the bot to run in the background.
@@ -70,6 +76,7 @@ class YoBot(commands.Bot):
         finally:
             yobot_task.cancel()  # Cancels the bot task.
             command_task.cancel()  # Cancels the command task.
+            #flask_task.cancel()  # Cancels the Flask task.
 
     def stop_bot(self):
         """Stops YoBot."""
@@ -93,6 +100,5 @@ class YoBot(commands.Bot):
                     self.log.debug(f'Loaded - [ {filename[:-3]} ]')
                     loaded_extensions += 1
         except Exception as e:
-            self.log.error(f'Failed to load cogs {cog_name}.')
-            self.log.error(f'Error: {e}')
+            raise CogException(cog_name, f'There was an error loading {e}')
         self.log.debug(f'Loaded {loaded_extensions} cogs.')

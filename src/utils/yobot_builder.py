@@ -3,8 +3,10 @@ import os
 from discord import Intents
 
 from bot.yobot import YoBot
-from utils.logger import YoBotLogger
-from utils.yobotlib import download_cogs, load_config
+from utils.yobot_logger import YoBotLogger
+from utils.yobot_lib import download_cogs
+from utils.yobot_exceptions import *
+from utils.yobot_configs import Configs
 
 
 class Builder(YoBot):
@@ -14,7 +16,7 @@ class Builder(YoBot):
     Attributes:
         yobot (YoBot): The YoBot instance.
         config_file (str): The path to the config file.
-        config (dict): The config file.
+        config (Config): The config file.
         log_file (str): The path to the log file.
         avatar_file (str): The path to the avatar file.
         cogs_dir (str): The path to the cogs directory.
@@ -22,18 +24,24 @@ class Builder(YoBot):
         log (YoBotLogger): The YoBot logger.
     """
 
-    def __init__(self, config_file: str):
-        self.config_file = config_file
-        self.config = load_config(self.config_file)
-        self.logo_file = self.config['file_paths']['ascii_logo']
-        self.log_file = self.config['file_paths']['log_file']
-        self.avatar_file = self.config['file_paths']['avatar_file']
-        self.cogs_dir = self.config['file_paths']['cogs_dir']
-        self.repo_info = self.config['cog_repo']
-        self.log = YoBotLogger(name='YoBot', log_file=self.log_file,
-                               level=self.config['log_level'], maxBytes=1000000, backupCount=1) # Setup the logger.
-        with open(self.logo_file, 'r') as logo:
-            self.logo = logo.read()
+    def __init__(self, config: Configs):
+        self.config = config
+        self.config_file = self.config.get('file_paths.config_file')
+        self.logo_file = self.config.get('file_paths.ascii_logo')
+        self.log_file = self.config.get('file_paths.log_file')
+        self.avatar_file = self.config.get('file_paths.avatar_file')
+        self.cogs_dir = self.config.get('file_paths.cogs_dir')
+        try:
+            self.log = YoBotLogger(name='YoBot', log_file=self.log_file,
+                                level=self.config.get('log_level'), maxBytes=1000000, backupCount=1) # Setup the logger.
+        except OSError as e:
+            raise LoggerException(self.log_file, e)
+        try:
+            with open(self.logo_file, 'r') as logo:
+                self.logo = logo.read()
+        except OSError as e:
+            raise FileException(self.logo_file, e)
+        
         green = '\033[92m'
         reset = '\033[0m'
         self.log.info('\n' + green + self.logo + reset + '\n')
@@ -53,12 +61,13 @@ class Builder(YoBot):
                     self.log.error('Config file not found.')
                     return
 
-                config = load_config(self.config_file)
+                config = self.config.get('cog_repo')
+                update = self.config.get('update_bot')
 
-                if config['update_bot']:
+                if update:
                     self.log.debug('Trying to build cogs')
                     self.log.info('Running first time Cog setup...')
-                    download_cogs(self, self.repo_info['repo_owner'], self.repo_info['repo_name'], self.repo_info['csv_file'])
+                    download_cogs(self, config['repo_owner'], config['repo_name'], config['repo_info'])
                     self.log.info('Cog setup complete.')
         except FileNotFoundError as e:
             self.log.error(f'Error setting up YoBot cogs: {e}')
@@ -84,7 +93,7 @@ class Builder(YoBot):
             self.log.debug('YoBot building...')
             return YoBot(
                 intents=intents,
-                config_file=self.config_file,
+                config=self.config,
                 logger=self.log
             )
 
