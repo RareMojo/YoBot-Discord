@@ -114,3 +114,5 @@ Thanks again for your time and happy coding!
 ## License
 YoBot is completely open source, licensed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) license.
 See [LICENSE.md](https://github.com/RareMojo/YoBot-Discord/blob/main/LICENSE.md) for more information.
+
+Logo was made with the amazing and fun to use [Stable Diffusion](https://huggingface.co/stabilityai)https://huggingface.co/stabilityai + [AUTOMATIC1111 Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui)https://github.com/AUTOMATIC1111/stable-diffusion-webui
